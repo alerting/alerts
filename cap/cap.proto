@@ -1,0 +1,256 @@
+syntax = "proto3";
+package cap;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+message Reference {
+   string id = 1;
+   string identifier = 2;
+   string sender = 3;
+   google.protobuf.Timestamp sent = 4;
+}
+
+message Resource {
+   // The text describing the type and content of the resource file
+   string description = 1;
+
+   // The identifier of the MIME content type and sub-type describing the resource file
+   string mime_type = 2;
+
+   // The integer indicating the size of the resource file
+   int64 size = 3;
+
+   // The identifier of the hyperlink for the resource file
+   string uri = 4;
+
+   // The base64 encoded data content of the resource file
+   bytes deref_uri = 5;
+
+   // The code representing the digital digest ("hash") computed from the resource file
+   string digest = 6;
+}
+
+message Area {
+   // The text describing the affected area of the alert message
+   string description = 1;
+
+   message Polygon {
+      string type = 1;
+      repeated google.protobuf.ListValue coordinates = 2;
+   }
+
+   // The paired values of points defining a polygon that delieantes the affected area of the alert message
+   repeated Polygon polygons = 2;
+
+   message Circle {
+      string type = 1;
+      repeated double coordinates = 2;
+      double radius = 3;
+   }
+
+   // The paried values of a point and radius delineating the affected area of the alert message
+   repeated Circle circles = 3;
+
+   // The geographic code delienating the affected area of the alert message
+   map<string, google.protobuf.ListValue> geocodes = 4;
+
+   // The specific or minimum altitude of the affected area of the alert message
+   double altitude = 5;
+
+   // The maximum altitude of the affected area of the alert message
+   double ceiling = 6;
+}
+
+message Info {
+   // The code denoting the language of the info sub-element of the alert message
+   string language = 1;
+
+   enum Category {
+      CATEGORY_UNKNOWN = 0;   // Unknown category
+      GEO = 1;                // Geophysical
+      MET = 2;                // Meteorological
+      SAFETY = 3;             // General emergency and public safety
+      SECURITY = 4;           // Law enforcement, military, homeland and local/private security
+      RESCUE = 5;             // Rescue and recovery
+      FIRE = 6;               // Fire suppression and resuce
+      HEALTH = 7;             // Medical and public health
+      ENV = 8;                // Pollution and other environmental
+      TRANSPORT = 9;          // Public and private transportation
+      INFRA = 10;             // Utility, telecommunication, other non-transport infrastructure
+      CBRNE = 11;             // Chemical, Biological, Radiological, Nuclear, or High-Yield Explosive threat or attack
+      OTHER = 12;             // Other events
+   }
+
+   // The code denoting the category of the subject event of the alert message
+   repeated Category categories = 2;
+
+   // The text denoting the type of the subject event of the alert message
+   string event = 3;
+
+   enum ResponseType {
+      RESPONSE_TYPE_UNKNOWN = 0; // Unknown response type
+      SHELTER = 1;               // Take shelter in place or per <instruction>
+      EVACUATE = 2;              // Relocate as instructed in the <instruction>
+      PREPARE = 3;               // Make preparations per the <instruction>
+      EXECUTE = 4;               // Execute a pre-planned activity identified in <instruction>
+      AVOID = 5;                 // Avoid the subject event as per the <instruction>
+      MONITOR = 6;               // Attend to information sources as described in <instruction>
+      ASSESS = 7;                // Evaluate the information in this message
+      ALL_CLEAR = 8;             // The subject event no longer poses a threat or concern and any follow on action is described in <instruction>
+      NONE = 9;                  // No action recommended
+   }
+
+   // The code denoting the type of action recommended for the target audience
+   repeated ResponseType response_types = 4;
+
+   enum Urgency {
+      URGENCY_UNKNOWN = 0;    // Urgency not known
+      IMMEDIATE = 1;          // Responsive action should be taken immediately
+      EXPECTED = 2;           // Responsive action should be taken soon (within next hour)
+      FUTURE = 3;             // Responsive action should be taken in the near future
+      PAST = 4;               // Responsive action is no longer required
+   }
+
+   // The code denoting the urgency of the subject event of the alert message
+   Urgency urgency = 5;
+
+   enum Severity {
+      SEVERITY_UNKNOWN = 0;   // Severity unknown
+      EXTREME = 1;            // Extraordinary threat to life or property
+      SEVERE = 2;             // Significant threat to life or property
+      MODERATE = 3;           // Possible threat to life or property
+      MINOR = 4;              // Minimal to no known threat to life or property
+   }
+
+   // The code denoting the severity of the subject event of the alert message
+   Severity severity = 6;
+
+   enum Certainty {
+      CERTAINTY_UNKNOWN = 0;  // Certainty unknown
+      OBSERVED = 1;           // Determined to have occurred or to be ongoing
+      LIKELY = 2;             // Likely (p > ~50%)
+      POSSIBLE = 3;           // Possible but not likely (p <= ~50%)
+      UNLIKELY = 4;           // Not expected to occur (p ~0)
+   }
+
+   // The code denoting the certainty of the subject event of hte alert message
+   Certainty certainty = 7;
+
+   // The text describing the intended audience of the alert message
+   string audience = 8;
+
+   // A system-specific code identifying the event type of the alert message
+   message ListString {
+      repeated string v = 1;
+   }
+   map<string, google.protobuf.ListValue> event_codes = 9;
+
+   // The effective time of the information of the alert message
+   google.protobuf.Timestamp effective = 10;
+
+   // The expected time of the beginning of hte subject event of the alert message
+   google.protobuf.Timestamp onset = 11;
+
+   // The expiry time of the information of the alert message
+   google.protobuf.Timestamp expires = 12;
+
+   // The text naming the originator of the alert message
+   string sender_name = 13;
+
+   // The text headling of the alert message
+   string headline = 14;
+
+   // The text describing the subject event of the alert message
+   string description = 15;
+
+   // The text describing the recommended action to be taken by the recipients of the alert message
+   string instruction = 16;
+
+   // The identifier of the hyperlink associating additional information with the alert message
+   string web = 17;
+
+   // The text describing the contact for follow-up and confirmation of the alert message
+   string contact = 18;
+
+   // A system-specific additional parameter associated with the alert message
+   map<string, google.protobuf.ListValue> parameters = 19;
+
+   // The container for all componment parts of the resource sub-element of the alert message
+   repeated Resource resources = 20;
+
+   // The container for all component parts of the area sub-element of the info sub-element of the alert message
+   repeated Area areas = 21;
+}
+
+message Alert {
+   string id = 1;
+
+   // The identifier of the alert message
+   string identifier = 2;
+
+   // The identifier of the sender of the alert message
+   string sender = 3;
+
+   // The time and date of the origination of the alert message
+   google.protobuf.Timestamp sent = 4;
+
+   enum Status {
+      STATUS_UNKNOWN = 0;     // Unknown status
+      ACTUAL = 1;             // Actionable by all targeted recipients
+      EXCERCISE = 2;          // Actionable only by designed excersice participants
+      SYSTEM = 3;             // For messages that support alert network internal functions
+      TEST = 4;               // Technical testing only, all recipients should disregard
+      DRAFT = 5;              // A preliminary template or draft, not actionable in its current form
+   }
+
+
+   // The code denoting the appropriate handling of the alert message
+   Status status = 5;
+
+   enum MessageType {
+      MESSAGE_TYPE_UNKNOWN = 0;     // Unknown message type
+      ALERT = 1;                    // Initial information requiring attention by targeted recipients
+      UPDATE = 2;                   // Updates and supercedes the earlier message(s) in <references>
+      CANCEL = 3;                   // Cancels the earlier alert message(s) identified in <references>
+      ACK = 4;                      // Acknowledges receipt and acceptance of the message(s) identified in <references>
+      ERROR = 5;                    // Indicates rejection of the message(s) identified in <references>; explanation should appear in <note>
+   }
+
+   // The code denoting the nature of the alert message
+   MessageType message_type = 6;
+
+   // The text identifying the source of the alert message
+   string source = 7;
+
+   enum Scope {
+      SCOPE_UNKNOWN = 0;      // Unknown scope
+      PUBLIC = 1;             // For dissemination to unrestricted audiences
+      RESTRICTED = 2;         // For dissemination only to users with a known operational requirement
+      PRIVATE = 3;            // For dissemination only to specified addresses
+   }
+
+   // The code denoting the intended distribution of the alert message
+   Scope scope = 8;
+
+   // The text describing the rule for limiting distribution of the restricted alert message
+   string restriction = 9;
+
+   // The group listing of intended recipients of the alert message
+   repeated string addresses = 10;
+
+   // The code denoting the special handling of the alert message
+   repeated string code = 11;
+
+   // The text describing the purpose or significance of the alert message
+   string note = 12;
+
+   // The group listing identifying earlier message(s) by the alert message
+   repeated Reference references = 13;
+
+   // The group listing naming the referent incident(s) of the alert message
+   repeated string incidents = 14;
+
+   // The container for all component parts of the info sub-element of the alert message
+   repeated Info infos = 15;
+}

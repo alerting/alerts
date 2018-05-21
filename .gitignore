@@ -1,0 +1,11 @@
+# IDE
+.vscode
+
+# Environment files
+env
+
+# Generated executables
+cmd/alert/alert
+cmd/gateway/gateway
+cmd/import/import
+cmd/receive/receive
