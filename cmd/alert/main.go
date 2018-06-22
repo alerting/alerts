@@ -21,21 +21,18 @@ import (
 	jaegercfg "github.com/uber/jaeger-client-go/config"
 )
 
-var client *elastic.Client
-var esIndex string
-
-//var conn stan.Conn
-
 func logError(span opentracing.Span, err error) {
 	ext.Error.Set(span, true)
 	span.LogFields(otlog.Error(err))
 	log.Print(err)
 }
 
-type alertServer struct{}
+type alertServer struct {
+	Service AlertService
+}
 
 func (s *alertServer) HasAlert(ctx context.Context, r *rpc.AlertRequest) (*rpc.AlertExistsResponse, error) {
-	exists, err := exists(ctx, client, esIndex, r.Id)
+	exists, err := s.Service.Has(ctx, r)
 
 	return &rpc.AlertExistsResponse{
 		Exists: exists,
@@ -43,15 +40,51 @@ func (s *alertServer) HasAlert(ctx context.Context, r *rpc.AlertRequest) (*rpc.A
 }
 
 func (s *alertServer) GetAlert(ctx context.Context, r *rpc.AlertRequest) (*cap.Alert, error) {
-	return get(ctx, client, esIndex, r.Id)
+	return s.Service.Get(ctx, r)
 }
 
 func (s *alertServer) FindAlerts(ctx context.Context, r *rpc.AlertsRequest) (*rpc.AlertsResponse, error) {
-	return find(ctx, client, esIndex, r)
+	return s.Service.Find(ctx, r)
+}
+
+func (s *alertServer) processAlert(ctx context.Context, alert *cap.Alert) error {
+	// Do some cleanup to ensure the IDs are correct
+	alert.Id = alert.ID()
+
+	for _, ref := range alert.References {
+		ref.Id = ref.ID()
+	}
+
+	// Check if the alert has been superseded
+	isSuperseded, err := s.Service.IsSuperseded(ctx, &rpc.AlertRequest{
+		Id: alert.Id,
+	})
+	if err != nil {
+		log.Println("error: IsSupserseded")
+		//return err
+	}
+	alert.Superseded = isSuperseded
+
+	// Supersede referenced alerts
+	log.Println(alert.MessageType)
+	if alert.MessageType == cap.Alert_UPDATE || alert.MessageType == cap.Alert_CANCEL {
+		for _, ref := range alert.References {
+			err := s.Service.Supersede(ctx, &rpc.AlertRequest{
+				Id: ref.Id,
+			})
+			if err != nil {
+				// TODO: If 404 ignore, else error
+				log.Println(err)
+			}
+		}
+	}
+
+	return nil
 }
 
 func (s *alertServer) AddAlert(ctx context.Context, alert *cap.Alert) (*rpc.Empty, error) {
-	err := save(ctx, client, esIndex, alert)
+	s.processAlert(ctx, alert)
+	err := s.Service.Add(ctx, alert)
 	return &rpc.Empty{}, err
 }
 
@@ -65,11 +98,13 @@ func (s *alertServer) AddAlerts(stream rpc.AlertService_AddAlertsServer) error {
 			return err
 		}
 
+		s.processAlert(stream.Context(), alert)
+
 		alerts = append(alerts, alert)
 
 		// If we have more than 20 alerts, save them.
 		if len(alerts) > 20 {
-			if err := save(stream.Context(), client, esIndex, alerts...); err != nil {
+			if err := s.Service.Add(stream.Context(), alerts...); err != nil {
 				return err
 			}
 
@@ -79,7 +114,7 @@ func (s *alertServer) AddAlerts(stream rpc.AlertService_AddAlertsServer) error {
 
 	// Save any remaining alerts.
 	if len(alerts) > 0 {
-		if err := save(stream.Context(), client, esIndex, alerts...); err != nil {
+		if err := s.Service.Add(stream.Context(), alerts...); err != nil {
 			return err
 		}
 	}
@@ -87,21 +122,27 @@ func (s *alertServer) AddAlerts(stream rpc.AlertService_AddAlertsServer) error {
 	return stream.SendAndClose(&rpc.Empty{})
 }
 
-func newAlertServer() *alertServer {
-	return &alertServer{}
+func newAlertServer(service AlertService) *alertServer {
+	return &alertServer{
+		Service: service,
+	}
 }
 
 func serve(c *cli.Context) error {
 	var err error
 
-	client, err = elastic.NewClient(
+	client, err := elastic.NewClient(
 		elastic.SetURL(c.GlobalString("elastic-url")),
 		elastic.SetSniff(c.GlobalBoolT("elastic-sniff")))
 	if err != nil {
 		return err
 	}
 
-	if err = setup(context.Background(), client, esIndex); err != nil {
+	service, err := NewElasticsearchAlertService(context.Background(), &AlertElasticsearchServiceConfig{
+		Client: client,
+		Index:  c.GlobalString("elastic-index"),
+	})
+	if err != nil {
 		return err
 	}
 
@@ -121,7 +162,7 @@ func serve(c *cli.Context) error {
 		grpc.UnaryInterceptor(otgrpc.OpenTracingServerInterceptor(opentracing.GlobalTracer())),
 		grpc.StreamInterceptor(otgrpc.OpenTracingStreamServerInterceptor(opentracing.GlobalTracer())),
 	)
-	rpc.RegisterAlertServiceServer(server, newAlertServer())
+	rpc.RegisterAlertServiceServer(server, newAlertServer(service))
 
 	listener, err := net.Listen("tcp", c.String("listen"))
 	if err != nil {
@@ -172,11 +213,10 @@ func main() {
 			Value:  "http://localhost:9200",
 		},
 		cli.StringFlag{
-			Name:        "elastic-index",
-			Usage:       "Index for elasticsearch",
-			EnvVar:      "ELASTIC_INDEX",
-			Value:       "alerts",
-			Destination: &esIndex,
+			Name:   "elastic-index",
+			Usage:  "Index for elasticsearch",
+			EnvVar: "ELASTIC_INDEX",
+			Value:  "alerts",
 		},
 		cli.BoolTFlag{
 			Name:   "elastic-sniff",

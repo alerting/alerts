@@ -253,4 +253,7 @@ message Alert {
 
    // The container for all component parts of the info sub-element of the alert message
    repeated Info infos = 15;
+
+   // The alert has been superseded
+   bool superseded = 16;
 }

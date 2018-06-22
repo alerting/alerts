@@ -44,7 +44,7 @@ type InfoResults struct {
 	Hits      []*InfoHit `json:"hits"`
 }
 
-func NewInfoFinder(elastic *elastic.Client, index string) *InfoFinder {
+func NewInfoFinder(client *elastic.Client, index string) *InfoFinder {
 	return &InfoFinder{
 		client:       client,
 		index:        index,

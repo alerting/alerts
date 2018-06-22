@@ -55,7 +55,8 @@ var mapping = `{
             "properties": {
               "sender": { "type": "keyword", "normalizer": "keyword_normalizer" },
               "sent": { "type": "date" },
-				  "indentifier": { "type": "keyword", "normalizer": "keyword_normalizer" }
+				  "indentifier": { "type": "keyword", "normalizer": "keyword_normalizer" },
+				  "id": { "type": "keyword", "normalizer": "keyword_normalizer" }
             }
           },
           "incidents": { "type": "keyword", "normalizer": "keyword_normalizer" },
@@ -116,36 +117,58 @@ var mapping = `{
     }
   }`
 
-// HEY!
+// AlertElasticsearchServiceConfig represents the configuration for the alert service.
+type AlertElasticsearchServiceConfig struct {
+	// Tracing
+	tracer *opentracing.Tracer
 
-func setup(ctx context.Context, client *elastic.Client, index string) error {
-	exists, err := client.IndexExists(index).Do(ctx)
+	// Elasticsearch
+	Client *elastic.Client
+	Index  string
+}
+
+type AlertElasticsearchService struct {
+	config *AlertElasticsearchServiceConfig
+}
+
+func NewElasticsearchAlertService(ctx context.Context, config *AlertElasticsearchServiceConfig) (AlertService, error) {
+	if config.Client == nil {
+		return nil, errors.New("No Elasticsearch client provided")
+	}
+
+	if config.Index == "" {
+		return nil, errors.New("No Elasticsearch index provided")
+	}
+
+	service := AlertElasticsearchService{
+		config: config,
+	}
+
+	service.setup(ctx)
+	return &service, nil
+}
+
+func (service *AlertElasticsearchService) setup(ctx context.Context) error {
+	exists, err := service.config.Client.IndexExists(service.config.Index).Do(ctx)
 	if err != nil {
 		return err
 	}
 
 	if !exists {
-		_, err := client.CreateIndex(index).BodyString(mapping).Do(ctx)
+		_, err := service.config.Client.CreateIndex(service.config.Index).BodyString(mapping).Do(ctx)
 		return err
 	}
 
 	return nil
 }
 
-func save(ctx context.Context, client *elastic.Client, index string, alerts ...*cap.Alert) error {
-	span, _ := opentracing.StartSpanFromContext(ctx, "save")
+func (service *AlertElasticsearchService) Add(ctx context.Context, alerts ...*cap.Alert) error {
+	span, _ := opentracing.StartSpanFromContext(ctx, "Add")
 	defer span.Finish()
 
-	bulk := client.Bulk().Index(index).Type("doc")
+	bulk := service.config.Client.Bulk().Index(service.config.Index).Type("doc")
 
 	for _, alert := range alerts {
-		// Do some cleanup to ensure the IDs are correct
-		alert.Id = alert.ID()
-
-		for _, ref := range alert.References {
-			ref.Id = ref.ID()
-		}
-
 		span.LogEventWithPayload("alert", fmt.Sprintf("%s %s,%s,%s", alert.Id, alert.Identifier, alert.Sender, alert.Sent))
 
 		// Conver the alert to a map
@@ -213,14 +236,14 @@ func save(ctx context.Context, client *elastic.Client, index string, alerts ...*
 	return nil
 }
 
-func exists(ctx context.Context, client *elastic.Client, index string, id string) (bool, error) {
-	span, _ := opentracing.StartSpanFromContext(ctx, "exists")
+func (service *AlertElasticsearchService) Has(ctx context.Context, request *rpc.AlertRequest) (bool, error) {
+	span, _ := opentracing.StartSpanFromContext(ctx, "Has")
 	defer span.Finish()
 
-	span.SetTag("alert.id", id)
+	span.SetTag("alert.id", request.Id)
 
-	item := elastic.NewMultiGetItem().Index(index).Type("doc").Id(id)
-	res, err := client.MultiGet().Add(item).Do(ctx)
+	item := elastic.NewMultiGetItem().Index(service.config.Index).Type("doc").Id(request.Id)
+	res, err := service.config.Client.MultiGet().Add(item).Do(ctx)
 	if err != nil {
 		logError(span, err)
 		return false, err
@@ -230,17 +253,17 @@ func exists(ctx context.Context, client *elastic.Client, index string, id string
 	return res.Docs[0].Found, nil
 }
 
-func get(ctx context.Context, client *elastic.Client, index string, id string) (*cap.Alert, error) {
-	span, _ := opentracing.StartSpanFromContext(ctx, "get")
+func (service *AlertElasticsearchService) Get(ctx context.Context, request *rpc.AlertRequest) (*cap.Alert, error) {
+	span, _ := opentracing.StartSpanFromContext(ctx, "Get")
 	defer span.Finish()
 
-	span.SetTag("alert.id", id)
+	span.SetTag("alert.id", request.Id)
 
 	span.LogEvent("Get alert")
-	item, err := client.Get().
-		Index(index).
+	item, err := service.config.Client.Get().
+		Index(service.config.Index).
 		Type("doc").
-		Id(id).
+		Id(request.Id).
 		Do(ctx)
 
 	if err != nil {
@@ -250,7 +273,7 @@ func get(ctx context.Context, client *elastic.Client, index string, id string) (
 
 	// If we got the id of an info block, return not found
 	if item.Routing != "" {
-		err := errors.New("Unable to find alert with id: " + id)
+		err := errors.New("Unable to find alert with id: " + request.Id)
 		logError(span, err)
 		return nil, err
 	}
@@ -268,8 +291,8 @@ func get(ctx context.Context, client *elastic.Client, index string, id string) (
 	span.LogEvent("Get infos")
 
 	// Fetch the children (ie. infos)
-	finder := NewInfoFinder(client, index)
-	finder = finder.AlertId(id)
+	finder := NewInfoFinder(service.config.Client, service.config.Index)
+	finder = finder.AlertId(request.Id)
 	finder = finder.Sort("_id")
 
 	infos, err := finder.Find()
@@ -337,13 +360,13 @@ func generateRangeQuery(ctx context.Context, field string, ts *rpc.TimeQuery) (*
 	return rq, nil
 }
 
-func find(ctx context.Context, client *elastic.Client, index string, r *rpc.AlertsRequest) (*rpc.AlertsResponse, error) {
+func (service *AlertElasticsearchService) Find(ctx context.Context, r *rpc.AlertsRequest) (*rpc.AlertsResponse, error) {
 	span, _ := opentracing.StartSpanFromContext(ctx, "find")
 	defer span.Finish()
 
 	rctx := opentracing.ContextWithSpan(ctx, span)
 
-	search := client.Search().Index(index).Type("doc")
+	search := service.config.Client.Search().Index(service.config.Index).Type("doc")
 
 	// Pagination
 	if r.Start > 0 {
@@ -538,4 +561,35 @@ func find(ctx context.Context, client *elastic.Client, index string, r *rpc.Aler
 	}
 
 	return &response, nil
+}
+
+func (service *AlertElasticsearchService) Supersede(ctx context.Context, request *rpc.AlertRequest) error {
+	span, _ := opentracing.StartSpanFromContext(ctx, "Has")
+	defer span.Finish()
+
+	span.SetTag("alert.id", request.Id)
+
+	update := map[string]interface{}{
+		"superseded": true,
+	}
+	_, err := service.config.Client.Update().Index(service.config.Index).Type("doc").Id(request.Id).Doc(update).Do(ctx)
+	if err != nil {
+		logError(span, err)
+		return err
+	}
+	return nil
+}
+
+func (service *AlertElasticsearchService) IsSuperseded(ctx context.Context, request *rpc.AlertRequest) (bool, error) {
+	search := service.config.Client.Search().Index(service.config.Index).Type("doc")
+	search = search.Size(1)
+	search = search.Query(elastic.NewNestedQuery("references", elastic.NewTermQuery("references.id", request.Id)))
+	search = search.FetchSource(false)
+
+	results, err := search.Do(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return results.TotalHits() > 0, nil
 }
