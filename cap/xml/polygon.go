@@ -43,7 +43,7 @@ func (p *Polygon) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 
 		// Only add coord if it's not the same as the previous point
 		coord := []float64{lon, lat}
-		if lastCoord == nil || (coord[0] != lastCoord[0] && coord[1] != lastCoord[1]) {
+		if lastCoord == nil || !(coord[0] == lastCoord[0] && coord[1] == lastCoord[1]) {
 			coordinates = append(coordinates, coord)
 			lastCoord = coord
 		}
