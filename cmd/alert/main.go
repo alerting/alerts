@@ -133,7 +133,8 @@ func serve(c *cli.Context) error {
 
 	client, err := elastic.NewClient(
 		elastic.SetURL(c.GlobalString("elastic-url")),
-		elastic.SetSniff(c.GlobalBoolT("elastic-sniff")))
+		elastic.SetSniff(c.GlobalBoolT("elastic-sniff")),
+		elastic.SetHealthcheck(c.GlobalBoolT("elastic-healthcheck")))
 	if err != nil {
 		return err
 	}
@@ -222,6 +223,11 @@ func main() {
 			Name:   "elastic-sniff",
 			Usage:  "Sniff for elasticsearch endpoints",
 			EnvVar: "ELASTIC_SNIFF",
+		},
+		cli.BoolTFlag{
+			Name:   "elastic-healthcheck",
+			Usage:  "Healthcheck for elasticsearch endpoints",
+			EnvVar: "ELASTIC_HEALTHCHECK",
 		},
 	}
 
