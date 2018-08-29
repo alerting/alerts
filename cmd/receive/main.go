@@ -56,6 +56,16 @@ func main() {
 			EnvVar: "ALERTS_HOST",
 			Value:  "localhost:2400",
 		},
+		cli.BoolFlag{
+			Name:   "alerts-insecure",
+			Usage:  "Use insecure grpc connection (no TLS)",
+			EnvVar: "ALERTS_INSECURE",
+		},
+		cli.StringFlag{
+			Name:   "alerts-ca-cert",
+			Usage:  "CA Certificate for the alerts service (default uses system certs)",
+			EnvVar: "ALERTS_CA_CERT",
+		},
 		cli.StringFlag{
 			Name:   "system, s",
 			Usage:  "NAAD system (e.g., naads)",

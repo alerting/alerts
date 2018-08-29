@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"io"
 	"log"
 	"net"
@@ -165,9 +166,26 @@ func serve(c *cli.Context) error {
 	)
 	rpc.RegisterAlertServiceServer(server, newAlertServer(service))
 
-	listener, err := net.Listen("tcp", c.String("listen"))
-	if err != nil {
-		return err
+	var listener net.Listener
+
+	if c.IsSet("cert") || c.IsSet("key") {
+		// Load certificate/key
+		cert, err := tls.LoadX509KeyPair(c.String("cert"), c.String("key"))
+		if err != nil {
+			return err
+		}
+
+		listener, err = tls.Listen("tcp", c.String("listen"), &tls.Config{
+			Certificates: []tls.Certificate{cert},
+		})
+		if err != nil {
+			return err
+		}
+	} else {
+		listener, err = net.Listen("tcp", c.String("listen"))
+		if err != nil {
+			return err
+		}
 	}
 
 	log.Printf("Serving on %s", c.String("listen"))
@@ -242,6 +260,16 @@ func main() {
 					Usage:  "host:port to listen on",
 					EnvVar: "LISTEN",
 					Value:  ":2400",
+				},
+				cli.StringFlag{
+					Name:   "cert",
+					Usage:  "SSL certificate",
+					EnvVar: "CERT",
+				},
+				cli.StringFlag{
+					Name:   "key",
+					Usage:  "SSL key",
+					EnvVar: "KEY",
 				},
 			},
 		},

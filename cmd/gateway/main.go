@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -9,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"google.golang.org/grpc/credentials"
 
 	"github.com/alerting/alerts/cap"
 	"github.com/alerting/alerts/rpc"
@@ -316,14 +321,44 @@ func serve(c *cli.Context) error {
 	var err error
 
 	// gRPC
+	var security grpc.DialOption
+
+	if !c.GlobalBool("alerts-insecure") {
+		rootCAs, err := x509.SystemCertPool()
+		if err != nil {
+			return err
+		}
+
+		if c.GlobalIsSet("alerts-ca-cert") {
+			rootCAs = x509.NewCertPool()
+
+			certs, err := ioutil.ReadFile(c.GlobalString("alerts-ca-cert"))
+			if err != nil {
+				return err
+			}
+
+			ok := rootCAs.AppendCertsFromPEM(certs)
+			if !ok {
+				log.Printf("No certificates imported from %s", c.GlobalString("alerts-ca-cert"))
+			}
+		}
+
+		security = grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
+			RootCAs:            rootCAs,
+			InsecureSkipVerify: false,
+		}))
+	} else {
+		security = grpc.WithInsecure()
+	}
+
 	grpcConn, err = grpc.Dial(c.GlobalString("alerts-host"),
 		grpc.WithMaxMsgSize(1024*1024*1024),
-		grpc.WithInsecure(),
+		security,
 		grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())),
 		grpc.WithStreamInterceptor(otgrpc.OpenTracingStreamClientInterceptor(opentracing.GlobalTracer())),
 	)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer grpcConn.Close()
 
@@ -332,7 +367,14 @@ func serve(c *cli.Context) error {
 	mux.HandleFunc("/alerts", getAlerts).Methods("GET")
 	mux.HandleFunc("/alerts/{id}", getAlert).Methods("GET")
 
-	return http.ListenAndServe(c.String("listen"), nethttp.Middleware(opentracing.GlobalTracer(), mux))
+	log.Printf("Listening on %s", c.String("listen"))
+
+	handler := nethttp.Middleware(opentracing.GlobalTracer(), mux)
+	if c.IsSet("cert") || c.IsSet("key") {
+		return http.ListenAndServeTLS(c.String("listen"), c.String("cert"), c.String("key"), handler)
+	} else {
+		return http.ListenAndServe(c.String("listen"), handler)
+	}
 }
 
 func main() {
@@ -374,6 +416,16 @@ func main() {
 			EnvVar: "ALERTS_HOST",
 			Value:  "localhost:2400",
 		},
+		cli.BoolFlag{
+			Name:   "alerts-insecure",
+			Usage:  "Use insecure grpc connection (no TLS)",
+			EnvVar: "ALERTS_INSECURE",
+		},
+		cli.StringFlag{
+			Name:   "alerts-ca-cert",
+			Usage:  "CA Certificate for the alerts service (default uses system certs)",
+			EnvVar: "ALERTS_CA_CERT",
+		},
 	}
 
 	app.Commands = []cli.Command{
@@ -387,6 +439,16 @@ func main() {
 					Usage:  "host:port to listen on",
 					EnvVar: "LISTEN",
 					Value:  ":8080",
+				},
+				cli.StringFlag{
+					Name:   "cert",
+					Usage:  "SSL certificate",
+					EnvVar: "CERT",
+				},
+				cli.StringFlag{
+					Name:   "key",
+					Usage:  "SSL key",
+					EnvVar: "KEY",
 				},
 			},
 		},

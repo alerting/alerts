@@ -2,7 +2,10 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"strings"
 
@@ -14,6 +17,7 @@ import (
 	"github.com/alerting/alerts/rpc"
 	"github.com/golang/protobuf/jsonpb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 
 	"github.com/alerting/alerts/cap/xml"
 	"github.com/opentracing/opentracing-go/ext"
@@ -132,11 +136,44 @@ func doFetchReference(ctx context.Context, referenceJSON string) error {
 func process(c *cli.Context) error {
 	// Initialize gRPC
 	var err error
+	var security grpc.DialOption
+
+	if !c.GlobalBool("alerts-insecure") {
+		rootCAs, err := x509.SystemCertPool()
+		if err != nil {
+			return err
+		}
+
+		if c.GlobalIsSet("alerts-ca-cert") {
+			rootCAs = x509.NewCertPool()
+
+			certs, err := ioutil.ReadFile(c.GlobalString("alerts-ca-cert"))
+			if err != nil {
+				return err
+			}
+
+			ok := rootCAs.AppendCertsFromPEM(certs)
+			if !ok {
+				log.Printf("No certificates imported from %s", c.GlobalString("alerts-ca-cert"))
+			}
+		}
+
+		security = grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
+			RootCAs:            rootCAs,
+			InsecureSkipVerify: false,
+		}))
+	} else {
+		security = grpc.WithInsecure()
+	}
+
 	grpcConn, err = grpc.Dial(c.GlobalString("alerts-host"),
-		grpc.WithInsecure(),
+		security,
 		grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())),
 		grpc.WithStreamInterceptor(otgrpc.OpenTracingStreamClientInterceptor(opentracing.GlobalTracer())),
 	)
+	if err != nil {
+		return err
+	}
 
 	// Create client
 	alertServiceClient = rpc.NewAlertServiceClient(grpcConn)
