@@ -39,10 +39,10 @@ To use the required version of Elastic in your application, it is strongly
 advised to use a tool like
 [dep](https://github.com/golang/dep)
 or
-[Glide](https://glide.sh/)
-to manage that dependency. Make sure to use a version such as `^6.0.0`.
+[Go modules](https://github.com/golang/go/wiki/Modules)
+to manage dependencies. Make sure to use a version such as `^6.0.0`.
 
-To use Elastic, simply import:
+To use Elastic, import:
 
 ```go
 import "github.com/olivere/elastic"
@@ -52,7 +52,7 @@ import "github.com/olivere/elastic"
 
 Elastic 6.0 targets Elasticsearch 6.x which was [released on 14th November 2017](https://www.elastic.co/blog/elasticsearch-6-0-0-released).
 
-Notice that there are will be a lot of [breaking changes in Elasticsearch 6.0](https://www.elastic.co/guide/en/elasticsearch/reference/6.2/breaking-changes-6.0.html)
+Notice that there are a lot of [breaking changes in Elasticsearch 6.0](https://www.elastic.co/guide/en/elasticsearch/reference/6.2/breaking-changes-6.0.html)
 and we used this as an opportunity to [clean up and refactor Elastic](https://github.com/olivere/elastic/blob/release-branch.v6/CHANGELOG-6.0.md)
 as we did in the transition from earlier versions of Elastic.
 
@@ -128,7 +128,7 @@ Here's a [link to a complete working example for v6](https://gist.github.com/oli
 
 Here are a few tips on how to get used to Elastic:
 
-1. Head over to the [Wiki](/olivere/elastic/wiki) for detailed information and
+1. Head over to the [Wiki](https://github.com/olivere/elastic/wiki) for detailed information and
    topics like e.g. [how to add a middleware](/olivere/elastic/wiki/HttpTransport)
    or how to [connect to AWS](/olivere/elastic/wiki/Using-with-AWS-Elasticsearch-Service).
 2. If you are unsure how to implement something, read the tests (all `_test.go` files).
@@ -363,6 +363,10 @@ The cat APIs are not implemented as of now. We think they are better suited for 
   - [ ] Snapshot status
   - [ ] Monitoring snapshot/restore status
   - [ ] Stopping currently running snapshot and restore
+- Scripting
+  - [x] GetScript
+  - [x] PutScript
+  - [x] DeleteScript
 
 ### Sorting
 

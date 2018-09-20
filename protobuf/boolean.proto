@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package alerts.protobuf;
+
+message BooleanResult {
+   bool result = 1;
+}

@@ -19,6 +19,14 @@ func (alert *Alert) ID() string {
 	return hex.EncodeToString(hash.Sum(nil))
 }
 
+func (alert *Alert) Reference() *Reference {
+	return &Reference{
+		Identifier: alert.Identifier,
+		Sender:     alert.Sender,
+		Sent:       alert.Sent,
+	}
+}
+
 func (r *Reference) ID() string {
 	hash := sha1.New()
 	hash.Write([]byte(fmt.Sprintf("%s,%d,%s", r.Sender, r.Sent.GetSeconds(), r.Identifier)))
@@ -41,4 +49,24 @@ func (alert *Alert) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		AllowUnknownFields: true,
 	}
 	return jd.Unmarshal(bytes.NewBuffer(b), alert)
+}
+
+// Checksum returns the checksum value for the resource, if available.
+// The Resource.Digest value is returned if provided. If no digest is available,
+// it is calculated from the DerefUri value (if available). Otherwise,
+// an empty string is returned.
+func (res *Resource) Checksum() string {
+	// If we have the digest, return it.
+	if res.Digest != "" {
+		return res.Digest
+	}
+
+	// If we have the contents, sha1sum that
+	if len(res.DerefUri) > 0 {
+		hash := sha1.New()
+		hash.Write(res.DerefUri)
+		return hex.EncodeToString(hash.Sum(nil))
+	}
+
+	return ""
 }

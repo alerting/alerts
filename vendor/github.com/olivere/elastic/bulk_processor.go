@@ -451,9 +451,11 @@ func (w *bulkWorker) work(ctx context.Context) {
 		case req, open := <-w.p.requestsC:
 			if open {
 				// Received a new request
-				w.service.Add(req)
-				if w.commitRequired() {
-					err = w.commit(ctx)
+				if _, err = req.Source(); err == nil {
+					w.service.Add(req)
+					if w.commitRequired() {
+						err = w.commit(ctx)
+					}
 				}
 			} else {
 				// Channel closed: Stop.
@@ -470,17 +472,20 @@ func (w *bulkWorker) work(ctx context.Context) {
 			}
 			w.flushAckC <- struct{}{}
 		}
-		if !stop && err != nil {
-			waitForActive := func() {
-				// Add back pressure to prevent Add calls from filling up the request queue
-				ready := make(chan struct{})
-				go w.waitForActiveConnection(ready)
-				<-ready
-			}
-			if _, ok := err.(net.Error); ok {
-				waitForActive()
-			} else if IsConnErr(err) {
-				waitForActive()
+		if err != nil {
+			w.p.c.errorf("elastic: bulk processor %q was unable to perform work: %v", w.p.name, err)
+			if !stop {
+				waitForActive := func() {
+					// Add back pressure to prevent Add calls from filling up the request queue
+					ready := make(chan struct{})
+					go w.waitForActiveConnection(ready)
+					<-ready
+				}
+				if _, ok := err.(net.Error); ok {
+					waitForActive()
+				} else if IsConnErr(err) {
+					waitForActive()
+				}
 			}
 		}
 	}
@@ -495,7 +500,22 @@ func (w *bulkWorker) commit(ctx context.Context) error {
 	// via exponential backoff
 	commitFunc := func() error {
 		var err error
+		// Save requests because they will be reset in service.Do
+		reqs := w.service.requests
 		res, err = w.service.Do(ctx)
+		if err == nil {
+			// Check res.Items since some might be soft failures
+			if res.Items != nil && res.Errors {
+				// res.Items will be 1 to 1 with reqs in same order
+				for i, item := range res.Items {
+					for _, result := range item {
+						if result.Status == 429 { // too many requests
+							w.service.Add(reqs[i])
+						}
+					}
+				}
+			}
+		}
 		return err
 	}
 	// notifyFunc will be called if retry fails
@@ -554,7 +574,7 @@ func (w *bulkWorker) waitForActiveConnection(ready chan<- struct{}) {
 				return
 			}
 		case <-t.C:
-			client.healthcheck(time.Duration(3)*time.Second, true)
+			client.healthcheck(context.Background(), time.Duration(3)*time.Second, true)
 			if client.mustActiveConn() == nil {
 				// found an active connection
 				// exit and signal done to the WaitGroup
