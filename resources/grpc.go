@@ -114,15 +114,7 @@ func (s *Server) Add(ctx context.Context, resource *cap.Resource) (*cap.Resource
 	if !has {
 		// If we have a DerefUri, decode + write that to file.
 		if len(resource.DerefUri) > 0 {
-			data, err := decode(resource.DerefUri)
-			if err != nil {
-				log.WithError(err).Error("Failed to decode DerefUri resource")
-				raven.CaptureError(err, nil)
-				ext.Error.Set(span, true)
-				span.LogFields(otlog.Error(err))
-				return nil, err
-			}
-
+			data := bytes.NewReader(resource.DerefUri)
 			err = s.Storage.Add(sctx, filename, resource.MimeType, data)
 			if err != nil {
 				log.WithError(err).Error("Failed to write DerefUri resource")

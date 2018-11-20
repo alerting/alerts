@@ -52,7 +52,7 @@ func (s *Server) Add(ctx context.Context, alert *cap.Alert) (*cap.Alert, error) 
 			log.WithField("resource", resource.Uri).Debug("Adding resource")
 			newResource, err := s.Resources.Add(sctx, resource)
 			if err != nil {
-				log.WithError(err).Error("Failed to check if alert has been superseded")
+				log.WithError(err).Error("Failed to add resource")
 				raven.CaptureError(err, nil)
 				ext.Error.Set(span, true)
 				span.LogFields(otlog.Error(err))
@@ -85,7 +85,7 @@ func (s *Server) Add(ctx context.Context, alert *cap.Alert) (*cap.Alert, error) 
 				raven.CaptureError(err, nil)
 				ext.Error.Set(span, true)
 				span.LogFields(otlog.Error(err))
-				return nil, err
+				//return nil, err
 			}
 		}
 	}
