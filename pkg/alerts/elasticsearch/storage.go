@@ -365,7 +365,7 @@ func (s *Storage) Find(ctx context.Context, criteria *alerts.FindCriteria) (*ale
 	if criteria.Count > 0 {
 		log.WithField("value", criteria.Count).Debug("count")
 		span.SetTag("count", criteria.Count)
-		search = search.From(int(criteria.Count))
+		search = search.Size(int(criteria.Count))
 	}
 
 	// Sort
