@@ -32,13 +32,12 @@ func Example() {
 
 	// Obtain a client. You can also provide your own HTTP client here.
 	client, err := elastic.NewClient(elastic.SetErrorLog(errorlog))
+	// Trace request and response details like this
+	// client, err := elastic.NewClient(elastic.SetTraceLog(log.New(os.Stdout, "", 0)))
 	if err != nil {
 		// Handle error
 		panic(err)
 	}
-
-	// Trace request and response details like this
-	//client.SetTracer(log.New(os.Stdout, "", 0))
 
 	// Ping the Elasticsearch server to get e.g. the version number
 	info, code, err := client.Ping("http://127.0.0.1:9200").Do(context.Background())
@@ -242,7 +241,7 @@ func Example() {
 	}
 }
 
-func ExampleClient_NewClient_default() {
+func ExampleNewClient_default() {
 	// Obtain a client to the Elasticsearch instance on http://127.0.0.1:9200.
 	client, err := elastic.NewClient()
 	if err != nil {
@@ -256,7 +255,7 @@ func ExampleClient_NewClient_default() {
 	// connected
 }
 
-func ExampleClient_NewClient_cluster() {
+func ExampleNewClient_cluster() {
 	// Obtain a client for an Elasticsearch cluster of two nodes,
 	// running on 10.0.1.1 and 10.0.1.2.
 	client, err := elastic.NewClient(elastic.SetURL("http://10.0.1.1:9200", "http://10.0.1.2:9200"))
@@ -267,7 +266,7 @@ func ExampleClient_NewClient_cluster() {
 	_ = client
 }
 
-func ExampleClient_NewClient_manyOptions() {
+func ExampleNewClient_manyOptions() {
 	// Obtain a client for an Elasticsearch cluster of two nodes,
 	// running on 10.0.1.1 and 10.0.1.2. Do not run the sniffer.
 	// Set the healthcheck interval to 10s. When requests fail,
@@ -287,7 +286,7 @@ func ExampleClient_NewClient_manyOptions() {
 	_ = client
 }
 
-func ExampleIndexExistsService() {
+func ExampleIndicesExistsService() {
 	// Get a client to the local Elasticsearch instance.
 	client, err := elastic.NewClient()
 	if err != nil {
@@ -305,7 +304,7 @@ func ExampleIndexExistsService() {
 	}
 }
 
-func ExampleCreateIndexService() {
+func ExampleIndicesCreateService() {
 	// Get a client to the local Elasticsearch instance.
 	client, err := elastic.NewClient()
 	if err != nil {
@@ -323,7 +322,7 @@ func ExampleCreateIndexService() {
 	}
 }
 
-func ExampleDeleteIndexService() {
+func ExampleIndicesDeleteService() {
 	// Get a client to the local Elasticsearch instance.
 	client, err := elastic.NewClient()
 	if err != nil {
@@ -508,7 +507,7 @@ func ExampleClusterHealthService() {
 	fmt.Printf("Cluster status is %q\n", res.Status)
 }
 
-func ExampleClusterHealthService_WaitForGreen() {
+func ExampleClusterHealthService_WaitForStatus() {
 	client, err := elastic.NewClient()
 	if err != nil {
 		panic(err)

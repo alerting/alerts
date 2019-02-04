@@ -1,0 +1,62 @@
+version: "3"
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.5.4
+    ports:
+      - "9200"
+    networks:
+      - backend
+
+  alerts:
+    image: nexus-docker.zacharyseguin.ca/alerts/alerts
+    build:
+      context: .
+      dockerfile: Dockerfile.alerts
+    ports:
+      - "2400"
+    networks:
+      - backend
+    command:
+      - serve
+      - --elasticsearch-url=http://elasticsearch:9200
+      - --elasticsearch-index=alertsv2
+      - --elasticsearch-sniff=false
+      - --elasticsearch-healthcheck=false
+      - --resources-service=alerts:2401
+      - --resources-insecure
+
+  resources:
+    image: nexus-docker.zacharyseguin.ca/alerts/resources
+    build:
+      context: .
+      dockerfile: Dockerfile.resources
+    ports:
+      - "2401"
+    networks:
+      - backend
+    volumes:
+      - "resources:/data"
+
+  gateway:
+    image: nexus-docker.zacharyseguin.ca/alerts/gateway
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - frontend
+      - backend
+    command:
+      - serve
+      - --alerts-service=alerts:2400
+      - --alerts-insecure
+      - --resources-service=resources:2401
+      - --resources-insecure
+
+networks:
+  frontend: {}
+  backend: {}
+
+volumes:
+  resources: {}

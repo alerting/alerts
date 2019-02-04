@@ -51,6 +51,7 @@ func main() {
 	client, err := elastic.NewClient(
 		elastic.SetURL(*url),
 		elastic.SetSniff(*sniff),
+		elastic.SetHealthcheck(*sniff),
 		elastic.SetHttpClient(signingClient),
 	)
 	if err != nil {

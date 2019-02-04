@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package resources;
+
+// Import additional proto definitions.
+import "github.com/alerting/alerts/pkg/cap/cap.proto";
+
+/** Messages **/
+message GetRequest {
+   string filename = 1;
+}
+
+message GetResponse {
+   bytes data = 1;
+   string mime_type = 2;
+}
+
+/** Services **/
+service ResourcesService {
+   // Add a new alert. Returns a new resource with information to get it later from the Resource service.
+   rpc Add(cap.Resource) returns (cap.Resource);
+
+   // Returns the resource for the given path.
+   rpc Get(GetRequest) returns (GetResponse);
+}

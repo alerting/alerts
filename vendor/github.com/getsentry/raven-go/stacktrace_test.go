@@ -11,6 +11,12 @@ import (
 	"testing"
 )
 
+// a
+func trace() *Stacktrace {
+	return NewStacktrace(0, 2, []string{thisPackage})
+	// b
+}
+
 func init() {
 	thisFile, thisPackage = derivePackage()
 	functionNameTests = []FunctionNameTest{
@@ -36,37 +42,13 @@ var (
 func TestFunctionName(t *testing.T) {
 	for _, test := range functionNameTests {
 		pc, _, _, _ := runtime.Caller(test.skip)
-		pack, name := functionName(pc)
+		pack, name := functionName(runtime.FuncForPC(pc).Name())
 
 		if pack != test.pack {
 			t.Errorf("incorrect package; got %s, want %s", pack, test.pack)
 		}
 		if name != test.name {
 			t.Errorf("incorrect function; got %s, want %s", name, test.name)
-		}
-	}
-}
-
-func TestSplitFunctionName(t *testing.T) {
-	tests := []struct{
-		in string
-		pack, name string
-	}{
-		{"", "", ""},
-		{"main.main", "main", "main"},
-		{"main.main.func1", "main", "main.func1"},
-		{"cmd/main.main", "cmd/main", "main"},
-		{"cmd/main.main.func1", "cmd/main", "main.func1"},
-		{"cmd/main.main.func1.1", "cmd/main", "main.func1.1"},
-		{"cmd/main.main.func1.1.1", "cmd/main", "main.func1.1.1"},
-		{"cmd/main.(*T).Do", "cmd/main", "(*T).Do"},
-		{"cmd/main.*T.Do", "cmd/main", "*T.Do"},
-	}
-
-	for _, test := range tests {
-		pack, name := splitFunctionName(test.in)
-		if pack != test.pack || name != test.name {
-			t.Errorf("wrong answer from splitFunctionName(%q); got (%q, %q), but want (%q, %q)", test.in, test.pack, test.name, pack, name)
 		}
 	}
 }
@@ -79,8 +61,14 @@ func TestStacktrace(t *testing.T) {
 	if len(st.Frames) == 0 {
 		t.Error("got zero frames")
 	}
+}
 
+func TestStacktraceFrame(t *testing.T) {
+	st := trace()
 	f := st.Frames[len(st.Frames)-1]
+	_, filename, _, _ := runtime.Caller(0)
+	runningInVendored := strings.Contains(filename, "vendor")
+
 	if f.Filename != thisFile {
 		t.Errorf("incorrect Filename; got %s, want %s", f.Filename, thisFile)
 	}
@@ -93,9 +81,20 @@ func TestStacktrace(t *testing.T) {
 	if f.Module != thisPackage {
 		t.Error("incorrect Module:", f.Module)
 	}
-	if f.Lineno != 121 {
+	if f.Lineno != 16 {
 		t.Error("incorrect Lineno:", f.Lineno)
 	}
+	if f.InApp != !runningInVendored {
+		t.Error("expected InApp to be true")
+	}
+	if f.InApp && st.Culprit() != fmt.Sprintf("%s.trace", thisPackage) {
+		t.Error("incorrect Culprit:", st.Culprit())
+	}
+}
+
+func TestStacktraceContext(t *testing.T) {
+	st := trace()
+	f := st.Frames[len(st.Frames)-1]
 	if f.ContextLine != "\treturn NewStacktrace(0, 2, []string{thisPackage})" {
 		t.Errorf("incorrect ContextLine: %#v", f.ContextLine)
 	}
@@ -105,21 +104,6 @@ func TestStacktrace(t *testing.T) {
 	if len(f.PostContext) != 2 || f.PostContext[0] != "\t// b" || f.PostContext[1] != "}" {
 		t.Errorf("incorrect PostContext %#v", f.PostContext)
 	}
-	_, filename, _, _ := runtime.Caller(0)
-	runningInVendored := strings.Contains(filename, "vendor")
-	if f.InApp != !runningInVendored {
-		t.Error("expected InApp to be true")
-	}
-
-	if f.InApp && st.Culprit() != fmt.Sprintf("%s.trace", thisPackage) {
-		t.Error("incorrect Culprit:", st.Culprit())
-	}
-}
-
-// a
-func trace() *Stacktrace {
-	return NewStacktrace(0, 2, []string{thisPackage})
-	// b
 }
 
 func derivePackage() (file, pack string) {
@@ -169,13 +153,19 @@ func TestNewStacktrace_noFrames(t *testing.T) {
 
 func TestFileContext(t *testing.T) {
 	// reset the cache
-	fileCache = make(map[string][][]byte)
+	loader := &fsLoader{cache: make(map[string][][]byte)}
 
 	tempdir, err := ioutil.TempDir("", "")
 	if err != nil {
 		t.Fatal("failed to create temporary directory:", err)
 	}
-	defer os.RemoveAll(tempdir)
+
+	defer func() {
+		err := os.RemoveAll(tempdir)
+		if err != nil {
+			fmt.Println("failed to remove temporary directory:", err)
+		}
+	}()
 
 	okPath := filepath.Join(tempdir, "ok")
 	missingPath := filepath.Join(tempdir, "missing")
@@ -200,13 +190,14 @@ func TestFileContext(t *testing.T) {
 		{noPermissionPath, 0, 0},
 	}
 	for i, test := range tests {
-		lines, index := fileContext(test.path, 1, 0)
+		lines, index := loader.Load(test.path, 1, 0)
 		if !(len(lines) == test.expectedLines && index == test.expectedIndex) {
 			t.Errorf("%d: fileContext(%#v, 1, 0) = %v, %v; expected len()=%d, %d",
 				i, test.path, lines, index, test.expectedLines, test.expectedIndex)
 		}
-		if len(fileCache) != i+1 {
-			t.Errorf("%d: result was not cached; len(fileCached)=%d", i, len(fileCache))
+		cacheLen := len(loader.cache)
+		if cacheLen != i+1 {
+			t.Errorf("%d: result was not cached; len=%d", i, cacheLen)
 		}
 	}
 }

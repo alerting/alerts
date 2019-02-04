@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"testing"
-
-	pkgErrors "github.com/pkg/errors"
 )
 
 func TestWrapWithExtraGeneratesProperErrWithExtra(t *testing.T) {
@@ -47,7 +45,7 @@ func TestWrapWithExtraGeneratesProperErrWithExtra(t *testing.T) {
 func TestWrapWithExtraGeneratesCausableError(t *testing.T) {
 	baseErr := fmt.Errorf("this is bad")
 	testErr := WrapWithExtra(baseErr, nil)
-	cause := pkgErrors.Cause(testErr)
+	cause := Cause(testErr)
 
 	if !reflect.DeepEqual(cause, baseErr) {
 		t.Errorf("Failed to unwrap error, got %+v, expected %+v", cause, baseErr)
@@ -103,7 +101,7 @@ func TestExtractErrorPullsExtraData(t *testing.T) {
 				"outer": "456",
 			},
 		},
-		// Futher wrapping of errors shouldn't allow for value override
+		// Further wrapping of errors shouldn't allow for value override
 		{
 			Error: WrapWithExtra(
 				WrapWithExtra(fmt.Errorf("This is bad"),
