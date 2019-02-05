@@ -8,6 +8,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/alerting/alerts/pkg/resources"
 	raven "github.com/getsentry/raven-go"
 	opentracing "github.com/opentracing/opentracing-go"
@@ -97,6 +100,11 @@ func (s *Storage) Get(ctx context.Context, filename string) ([]byte, string, err
 	if err != nil {
 		log.WithError(err).Error("Failed to open resource")
 		raven.CaptureErrorAndWait(err, nil)
+
+		if os.IsNotExist(err) {
+			return nil, "", status.Error(codes.NotFound, err.Error())
+		}
+
 		return nil, "", err
 	}
 	defer f.Close()
