@@ -13,7 +13,7 @@ services:
       context: .
       dockerfile: Dockerfile.alerts
     ports:
-      - "2400"
+      - "2400:2400"
     networks:
       - backend
     command:
@@ -22,7 +22,7 @@ services:
       - --elasticsearch-index=alertsv2
       - --elasticsearch-sniff=false
       - --elasticsearch-healthcheck=false
-      - --resources-service=alerts:2401
+      - --resources-service=resources:2401
       - --resources-insecure
 
   resources:
