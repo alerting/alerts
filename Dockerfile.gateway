@@ -1,0 +1,7 @@
+FROM nexus-docker.zacharyseguin.ca/alerts/base:latest AS base
+FROM scratch
+EXPOSE 8080
+COPY --from=base /go/bin/gateway /gateway
+USER 10002
+ENTRYPOINT ["/gateway"]
+CMD ["serve"]

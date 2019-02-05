@@ -27,18 +27,17 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-// Mode in which the query must be processed.
+// Mode in which the statement must be processed.
 type ExecuteSqlRequest_QueryMode int32
 
 const (
-	// The default mode where only the query result, without any information
-	// about the query plan is returned.
+	// The default mode. Only the statement results are returned.
 	ExecuteSqlRequest_NORMAL ExecuteSqlRequest_QueryMode = 0
-	// This mode returns only the query plan, without any result rows or
+	// This mode returns only the query plan, without any results or
 	// execution statistics information.
 	ExecuteSqlRequest_PLAN ExecuteSqlRequest_QueryMode = 1
 	// This mode returns both the query plan and the execution statistics along
-	// with the result rows.
+	// with the results.
 	ExecuteSqlRequest_PROFILE ExecuteSqlRequest_QueryMode = 2
 )
 
@@ -57,15 +56,15 @@ func (x ExecuteSqlRequest_QueryMode) String() string {
 	return proto.EnumName(ExecuteSqlRequest_QueryMode_name, int32(x))
 }
 func (ExecuteSqlRequest_QueryMode) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{6, 0}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{6, 0}
 }
 
 // The request for [CreateSession][google.spanner.v1.Spanner.CreateSession].
 type CreateSessionRequest struct {
 	// Required. The database in which the new session is created.
-	Database string `protobuf:"bytes,1,opt,name=database" json:"database,omitempty"`
+	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
 	// The session to create.
-	Session              *Session `protobuf:"bytes,2,opt,name=session" json:"session,omitempty"`
+	Session              *Session `protobuf:"bytes,2,opt,name=session,proto3" json:"session,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -75,7 +74,7 @@ func (m *CreateSessionRequest) Reset()         { *m = CreateSessionRequest{} }
 func (m *CreateSessionRequest) String() string { return proto.CompactTextString(m) }
 func (*CreateSessionRequest) ProtoMessage()    {}
 func (*CreateSessionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{0}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{0}
 }
 func (m *CreateSessionRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CreateSessionRequest.Unmarshal(m, b)
@@ -113,7 +112,7 @@ func (m *CreateSessionRequest) GetSession() *Session {
 type Session struct {
 	// The name of the session. This is always system-assigned; values provided
 	// when creating a session are ignored.
-	Name string `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The labels for the session.
 	//
 	//  * Label keys must be between 1 and 63 characters long and must conform to
@@ -123,12 +122,12 @@ type Session struct {
 	//  * No more than 64 labels can be associated with a given session.
 	//
 	// See https://goo.gl/xmQnxf for more information on and examples of labels.
-	Labels map[string]string `protobuf:"bytes,2,rep,name=labels" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Labels map[string]string `protobuf:"bytes,2,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Output only. The timestamp when the session is created.
-	CreateTime *timestamp.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime" json:"create_time,omitempty"`
+	CreateTime *timestamp.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The approximate timestamp when the session is last used. It is
 	// typically earlier than the actual last use time.
-	ApproximateLastUseTime *timestamp.Timestamp `protobuf:"bytes,4,opt,name=approximate_last_use_time,json=approximateLastUseTime" json:"approximate_last_use_time,omitempty"`
+	ApproximateLastUseTime *timestamp.Timestamp `protobuf:"bytes,4,opt,name=approximate_last_use_time,json=approximateLastUseTime,proto3" json:"approximate_last_use_time,omitempty"`
 	XXX_NoUnkeyedLiteral   struct{}             `json:"-"`
 	XXX_unrecognized       []byte               `json:"-"`
 	XXX_sizecache          int32                `json:"-"`
@@ -138,7 +137,7 @@ func (m *Session) Reset()         { *m = Session{} }
 func (m *Session) String() string { return proto.CompactTextString(m) }
 func (*Session) ProtoMessage()    {}
 func (*Session) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{1}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{1}
 }
 func (m *Session) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Session.Unmarshal(m, b)
@@ -189,7 +188,7 @@ func (m *Session) GetApproximateLastUseTime() *timestamp.Timestamp {
 // The request for [GetSession][google.spanner.v1.Spanner.GetSession].
 type GetSessionRequest struct {
 	// Required. The name of the session to retrieve.
-	Name                 string   `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -199,7 +198,7 @@ func (m *GetSessionRequest) Reset()         { *m = GetSessionRequest{} }
 func (m *GetSessionRequest) String() string { return proto.CompactTextString(m) }
 func (*GetSessionRequest) ProtoMessage()    {}
 func (*GetSessionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{2}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{2}
 }
 func (m *GetSessionRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_GetSessionRequest.Unmarshal(m, b)
@@ -229,14 +228,14 @@ func (m *GetSessionRequest) GetName() string {
 // The request for [ListSessions][google.spanner.v1.Spanner.ListSessions].
 type ListSessionsRequest struct {
 	// Required. The database in which to list sessions.
-	Database string `protobuf:"bytes,1,opt,name=database" json:"database,omitempty"`
+	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
 	// Number of sessions to be returned in the response. If 0 or less, defaults
 	// to the server's maximum allowed page size.
-	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize" json:"page_size,omitempty"`
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// If non-empty, `page_token` should contain a
 	// [next_page_token][google.spanner.v1.ListSessionsResponse.next_page_token] from a previous
 	// [ListSessionsResponse][google.spanner.v1.ListSessionsResponse].
-	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken" json:"page_token,omitempty"`
+	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// An expression for filtering the results of the request. Filter rules are
 	// case insensitive. The fields eligible for filtering are:
 	//
@@ -247,7 +246,7 @@ type ListSessionsRequest struct {
 	//   * `labels.env:*` --> The session has the label "env".
 	//   * `labels.env:dev` --> The session has the label "env" and the value of
 	//                        the label contains the string "dev".
-	Filter               string   `protobuf:"bytes,4,opt,name=filter" json:"filter,omitempty"`
+	Filter               string   `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -257,7 +256,7 @@ func (m *ListSessionsRequest) Reset()         { *m = ListSessionsRequest{} }
 func (m *ListSessionsRequest) String() string { return proto.CompactTextString(m) }
 func (*ListSessionsRequest) ProtoMessage()    {}
 func (*ListSessionsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{3}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{3}
 }
 func (m *ListSessionsRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ListSessionsRequest.Unmarshal(m, b)
@@ -308,11 +307,11 @@ func (m *ListSessionsRequest) GetFilter() string {
 // The response for [ListSessions][google.spanner.v1.Spanner.ListSessions].
 type ListSessionsResponse struct {
 	// The list of requested sessions.
-	Sessions []*Session `protobuf:"bytes,1,rep,name=sessions" json:"sessions,omitempty"`
+	Sessions []*Session `protobuf:"bytes,1,rep,name=sessions,proto3" json:"sessions,omitempty"`
 	// `next_page_token` can be sent in a subsequent
 	// [ListSessions][google.spanner.v1.Spanner.ListSessions] call to fetch more of the matching
 	// sessions.
-	NextPageToken        string   `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken" json:"next_page_token,omitempty"`
+	NextPageToken        string   `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -322,7 +321,7 @@ func (m *ListSessionsResponse) Reset()         { *m = ListSessionsResponse{} }
 func (m *ListSessionsResponse) String() string { return proto.CompactTextString(m) }
 func (*ListSessionsResponse) ProtoMessage()    {}
 func (*ListSessionsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{4}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{4}
 }
 func (m *ListSessionsResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ListSessionsResponse.Unmarshal(m, b)
@@ -359,7 +358,7 @@ func (m *ListSessionsResponse) GetNextPageToken() string {
 // The request for [DeleteSession][google.spanner.v1.Spanner.DeleteSession].
 type DeleteSessionRequest struct {
 	// Required. The name of the session to delete.
-	Name                 string   `protobuf:"bytes,1,opt,name=name" json:"name,omitempty"`
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -369,7 +368,7 @@ func (m *DeleteSessionRequest) Reset()         { *m = DeleteSessionRequest{} }
 func (m *DeleteSessionRequest) String() string { return proto.CompactTextString(m) }
 func (*DeleteSessionRequest) ProtoMessage()    {}
 func (*DeleteSessionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{5}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{5}
 }
 func (m *DeleteSessionRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_DeleteSessionRequest.Unmarshal(m, b)
@@ -400,13 +399,24 @@ func (m *DeleteSessionRequest) GetName() string {
 // [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql].
 type ExecuteSqlRequest struct {
 	// Required. The session in which the SQL query should be performed.
-	Session string `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
+	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	// The transaction to use. If none is provided, the default is a
 	// temporary read-only transaction with strong concurrency.
-	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
-	// Required. The SQL query string.
-	Sql string `protobuf:"bytes,3,opt,name=sql" json:"sql,omitempty"`
-	// The SQL query string can contain parameter placeholders. A parameter
+	//
+	// The transaction to use.
+	//
+	// For queries, if none is provided, the default is a temporary read-only
+	// transaction with strong concurrency.
+	//
+	// Standard DML statements require a ReadWrite transaction. Single-use
+	// transactions are not supported (to avoid replay).  The caller must
+	// either supply an existing transaction ID or begin a new transaction.
+	//
+	// Partitioned DML requires an existing PartitionedDml transaction ID.
+	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
+	// Required. The SQL string.
+	Sql string `protobuf:"bytes,3,opt,name=sql,proto3" json:"sql,omitempty"`
+	// The SQL string can contain parameter placeholders. A parameter
 	// placeholder consists of `'@'` followed by the parameter
 	// name. Parameter names consist of any combination of letters,
 	// numbers, and underscores.
@@ -415,37 +425,48 @@ type ExecuteSqlRequest struct {
 	// parameter name can be used more than once, for example:
 	//   `"WHERE id > @msg_id AND id < @msg_id + 100"`
 	//
-	// It is an error to execute an SQL query with unbound parameters.
+	// It is an error to execute an SQL statement with unbound parameters.
 	//
 	// Parameter values are specified using `params`, which is a JSON
 	// object whose keys are parameter names, and whose values are the
 	// corresponding parameter values.
-	Params *_struct.Struct `protobuf:"bytes,4,opt,name=params" json:"params,omitempty"`
+	Params *_struct.Struct `protobuf:"bytes,4,opt,name=params,proto3" json:"params,omitempty"`
 	// It is not always possible for Cloud Spanner to infer the right SQL type
 	// from a JSON value.  For example, values of type `BYTES` and values
 	// of type `STRING` both appear in [params][google.spanner.v1.ExecuteSqlRequest.params] as JSON strings.
 	//
 	// In these cases, `param_types` can be used to specify the exact
-	// SQL type for some or all of the SQL query parameters. See the
+	// SQL type for some or all of the SQL statement parameters. See the
 	// definition of [Type][google.spanner.v1.Type] for more information
 	// about SQL types.
-	ParamTypes map[string]*Type `protobuf:"bytes,5,rep,name=param_types,json=paramTypes" json:"param_types,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// If this request is resuming a previously interrupted SQL query
+	ParamTypes map[string]*Type `protobuf:"bytes,5,rep,name=param_types,json=paramTypes,proto3" json:"param_types,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	// If this request is resuming a previously interrupted SQL statement
 	// execution, `resume_token` should be copied from the last
 	// [PartialResultSet][google.spanner.v1.PartialResultSet] yielded before the interruption. Doing this
-	// enables the new SQL query execution to resume where the last one left
+	// enables the new SQL statement execution to resume where the last one left
 	// off. The rest of the request parameters must exactly match the
 	// request that yielded this token.
 	ResumeToken []byte `protobuf:"bytes,6,opt,name=resume_token,json=resumeToken,proto3" json:"resume_token,omitempty"`
 	// Used to control the amount of debugging information returned in
 	// [ResultSetStats][google.spanner.v1.ResultSetStats]. If [partition_token][google.spanner.v1.ExecuteSqlRequest.partition_token] is set, [query_mode][google.spanner.v1.ExecuteSqlRequest.query_mode] can only
 	// be set to [QueryMode.NORMAL][google.spanner.v1.ExecuteSqlRequest.QueryMode.NORMAL].
-	QueryMode ExecuteSqlRequest_QueryMode `protobuf:"varint,7,opt,name=query_mode,json=queryMode,enum=google.spanner.v1.ExecuteSqlRequest_QueryMode" json:"query_mode,omitempty"`
+	QueryMode ExecuteSqlRequest_QueryMode `protobuf:"varint,7,opt,name=query_mode,json=queryMode,proto3,enum=google.spanner.v1.ExecuteSqlRequest_QueryMode" json:"query_mode,omitempty"`
 	// If present, results will be restricted to the specified partition
 	// previously created using PartitionQuery().  There must be an exact
 	// match for the values of fields common to this message and the
 	// PartitionQueryRequest message used to create this partition_token.
-	PartitionToken       []byte   `protobuf:"bytes,8,opt,name=partition_token,json=partitionToken,proto3" json:"partition_token,omitempty"`
+	PartitionToken []byte `protobuf:"bytes,8,opt,name=partition_token,json=partitionToken,proto3" json:"partition_token,omitempty"`
+	// A per-transaction sequence number used to identify this request. This
+	// makes each request idempotent such that if the request is received multiple
+	// times, at most one will succeed.
+	//
+	// The sequence number must be monotonically increasing within the
+	// transaction. If a request arrives for the first time with an out-of-order
+	// sequence number, the transaction may be aborted. Replays of previously
+	// handled requests will yield the same response as the first execution.
+	//
+	// Required for DML statements. Ignored for queries.
+	Seqno                int64    `protobuf:"varint,9,opt,name=seqno,proto3" json:"seqno,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -455,7 +476,7 @@ func (m *ExecuteSqlRequest) Reset()         { *m = ExecuteSqlRequest{} }
 func (m *ExecuteSqlRequest) String() string { return proto.CompactTextString(m) }
 func (*ExecuteSqlRequest) ProtoMessage()    {}
 func (*ExecuteSqlRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{6}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{6}
 }
 func (m *ExecuteSqlRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ExecuteSqlRequest.Unmarshal(m, b)
@@ -531,6 +552,13 @@ func (m *ExecuteSqlRequest) GetPartitionToken() []byte {
 	return nil
 }
 
+func (m *ExecuteSqlRequest) GetSeqno() int64 {
+	if m != nil {
+		return m.Seqno
+	}
+	return 0
+}
+
 // Options for a PartitionQueryRequest and
 // PartitionReadRequest.
 type PartitionOptions struct {
@@ -540,7 +568,7 @@ type PartitionOptions struct {
 	// The desired data size for each partition generated.  The default for this
 	// option is currently 1 GiB.  This is only a hint. The actual size of each
 	// partition may be smaller or larger than this size request.
-	PartitionSizeBytes int64 `protobuf:"varint,1,opt,name=partition_size_bytes,json=partitionSizeBytes" json:"partition_size_bytes,omitempty"`
+	PartitionSizeBytes int64 `protobuf:"varint,1,opt,name=partition_size_bytes,json=partitionSizeBytes,proto3" json:"partition_size_bytes,omitempty"`
 	// **Note:** This hint is currently ignored by PartitionQuery and
 	// PartitionRead requests.
 	//
@@ -549,7 +577,7 @@ type PartitionOptions struct {
 	// is currently 10,000. The maximum value is currently 200,000.  This is only
 	// a hint.  The actual number of partitions returned may be smaller or larger
 	// than this maximum count request.
-	MaxPartitions        int64    `protobuf:"varint,2,opt,name=max_partitions,json=maxPartitions" json:"max_partitions,omitempty"`
+	MaxPartitions        int64    `protobuf:"varint,2,opt,name=max_partitions,json=maxPartitions,proto3" json:"max_partitions,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -559,7 +587,7 @@ func (m *PartitionOptions) Reset()         { *m = PartitionOptions{} }
 func (m *PartitionOptions) String() string { return proto.CompactTextString(m) }
 func (*PartitionOptions) ProtoMessage()    {}
 func (*PartitionOptions) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{7}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{7}
 }
 func (m *PartitionOptions) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PartitionOptions.Unmarshal(m, b)
@@ -596,17 +624,21 @@ func (m *PartitionOptions) GetMaxPartitions() int64 {
 // The request for [PartitionQuery][google.spanner.v1.Spanner.PartitionQuery]
 type PartitionQueryRequest struct {
 	// Required. The session used to create the partitions.
-	Session string `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
+	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	// Read only snapshot transactions are supported, read/write and single use
 	// transactions are not.
-	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
+	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
 	// The query request to generate partitions for. The request will fail if
 	// the query is not root partitionable. The query plan of a root
 	// partitionable query has a single distributed union operator. A distributed
 	// union operator conceptually divides one or more tables into multiple
 	// splits, remotely evaluates a subquery independently on each split, and
 	// then unions all results.
-	Sql string `protobuf:"bytes,3,opt,name=sql" json:"sql,omitempty"`
+	//
+	// This must not contain DML commands, such as INSERT, UPDATE, or
+	// DELETE. Use [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql] with a
+	// PartitionedDml transaction for large, partition-friendly DML operations.
+	Sql string `protobuf:"bytes,3,opt,name=sql,proto3" json:"sql,omitempty"`
 	// The SQL query string can contain parameter placeholders. A parameter
 	// placeholder consists of `'@'` followed by the parameter
 	// name. Parameter names consist of any combination of letters,
@@ -621,7 +653,7 @@ type PartitionQueryRequest struct {
 	// Parameter values are specified using `params`, which is a JSON
 	// object whose keys are parameter names, and whose values are the
 	// corresponding parameter values.
-	Params *_struct.Struct `protobuf:"bytes,4,opt,name=params" json:"params,omitempty"`
+	Params *_struct.Struct `protobuf:"bytes,4,opt,name=params,proto3" json:"params,omitempty"`
 	// It is not always possible for Cloud Spanner to infer the right SQL type
 	// from a JSON value.  For example, values of type `BYTES` and values
 	// of type `STRING` both appear in [params][google.spanner.v1.PartitionQueryRequest.params] as JSON strings.
@@ -630,9 +662,9 @@ type PartitionQueryRequest struct {
 	// SQL type for some or all of the SQL query parameters. See the
 	// definition of [Type][google.spanner.v1.Type] for more information
 	// about SQL types.
-	ParamTypes map[string]*Type `protobuf:"bytes,5,rep,name=param_types,json=paramTypes" json:"param_types,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	ParamTypes map[string]*Type `protobuf:"bytes,5,rep,name=param_types,json=paramTypes,proto3" json:"param_types,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// Additional options that affect how many partitions are created.
-	PartitionOptions     *PartitionOptions `protobuf:"bytes,6,opt,name=partition_options,json=partitionOptions" json:"partition_options,omitempty"`
+	PartitionOptions     *PartitionOptions `protobuf:"bytes,6,opt,name=partition_options,json=partitionOptions,proto3" json:"partition_options,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -642,7 +674,7 @@ func (m *PartitionQueryRequest) Reset()         { *m = PartitionQueryRequest{} }
 func (m *PartitionQueryRequest) String() string { return proto.CompactTextString(m) }
 func (*PartitionQueryRequest) ProtoMessage()    {}
 func (*PartitionQueryRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{8}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{8}
 }
 func (m *PartitionQueryRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PartitionQueryRequest.Unmarshal(m, b)
@@ -707,19 +739,19 @@ func (m *PartitionQueryRequest) GetPartitionOptions() *PartitionOptions {
 // The request for [PartitionRead][google.spanner.v1.Spanner.PartitionRead]
 type PartitionReadRequest struct {
 	// Required. The session used to create the partitions.
-	Session string `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
+	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	// Read only snapshot transactions are supported, read/write and single use
 	// transactions are not.
-	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
+	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
 	// Required. The name of the table in the database to be read.
-	Table string `protobuf:"bytes,3,opt,name=table" json:"table,omitempty"`
+	Table string `protobuf:"bytes,3,opt,name=table,proto3" json:"table,omitempty"`
 	// If non-empty, the name of an index on [table][google.spanner.v1.PartitionReadRequest.table]. This index is
 	// used instead of the table primary key when interpreting [key_set][google.spanner.v1.PartitionReadRequest.key_set]
 	// and sorting result rows. See [key_set][google.spanner.v1.PartitionReadRequest.key_set] for further information.
-	Index string `protobuf:"bytes,4,opt,name=index" json:"index,omitempty"`
+	Index string `protobuf:"bytes,4,opt,name=index,proto3" json:"index,omitempty"`
 	// The columns of [table][google.spanner.v1.PartitionReadRequest.table] to be returned for each row matching
 	// this request.
-	Columns []string `protobuf:"bytes,5,rep,name=columns" json:"columns,omitempty"`
+	Columns []string `protobuf:"bytes,5,rep,name=columns,proto3" json:"columns,omitempty"`
 	// Required. `key_set` identifies the rows to be yielded. `key_set` names the
 	// primary keys of the rows in [table][google.spanner.v1.PartitionReadRequest.table] to be yielded, unless [index][google.spanner.v1.PartitionReadRequest.index]
 	// is present. If [index][google.spanner.v1.PartitionReadRequest.index] is present, then [key_set][google.spanner.v1.PartitionReadRequest.key_set] instead names
@@ -727,9 +759,9 @@ type PartitionReadRequest struct {
 	//
 	// It is not an error for the `key_set` to name rows that do not
 	// exist in the database. Read yields nothing for nonexistent rows.
-	KeySet *KeySet `protobuf:"bytes,6,opt,name=key_set,json=keySet" json:"key_set,omitempty"`
+	KeySet *KeySet `protobuf:"bytes,6,opt,name=key_set,json=keySet,proto3" json:"key_set,omitempty"`
 	// Additional options that affect how many partitions are created.
-	PartitionOptions     *PartitionOptions `protobuf:"bytes,9,opt,name=partition_options,json=partitionOptions" json:"partition_options,omitempty"`
+	PartitionOptions     *PartitionOptions `protobuf:"bytes,9,opt,name=partition_options,json=partitionOptions,proto3" json:"partition_options,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
 	XXX_sizecache        int32             `json:"-"`
@@ -739,7 +771,7 @@ func (m *PartitionReadRequest) Reset()         { *m = PartitionReadRequest{} }
 func (m *PartitionReadRequest) String() string { return proto.CompactTextString(m) }
 func (*PartitionReadRequest) ProtoMessage()    {}
 func (*PartitionReadRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{9}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{9}
 }
 func (m *PartitionReadRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PartitionReadRequest.Unmarshal(m, b)
@@ -824,7 +856,7 @@ func (m *Partition) Reset()         { *m = Partition{} }
 func (m *Partition) String() string { return proto.CompactTextString(m) }
 func (*Partition) ProtoMessage()    {}
 func (*Partition) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{10}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{10}
 }
 func (m *Partition) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Partition.Unmarshal(m, b)
@@ -855,9 +887,9 @@ func (m *Partition) GetPartitionToken() []byte {
 // or [PartitionRead][google.spanner.v1.Spanner.PartitionRead]
 type PartitionResponse struct {
 	// Partitions created by this request.
-	Partitions []*Partition `protobuf:"bytes,1,rep,name=partitions" json:"partitions,omitempty"`
+	Partitions []*Partition `protobuf:"bytes,1,rep,name=partitions,proto3" json:"partitions,omitempty"`
 	// Transaction created by this request.
-	Transaction          *Transaction `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
+	Transaction          *Transaction `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}     `json:"-"`
 	XXX_unrecognized     []byte       `json:"-"`
 	XXX_sizecache        int32        `json:"-"`
@@ -867,7 +899,7 @@ func (m *PartitionResponse) Reset()         { *m = PartitionResponse{} }
 func (m *PartitionResponse) String() string { return proto.CompactTextString(m) }
 func (*PartitionResponse) ProtoMessage()    {}
 func (*PartitionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{11}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{11}
 }
 func (m *PartitionResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_PartitionResponse.Unmarshal(m, b)
@@ -905,19 +937,19 @@ func (m *PartitionResponse) GetTransaction() *Transaction {
 // [StreamingRead][google.spanner.v1.Spanner.StreamingRead].
 type ReadRequest struct {
 	// Required. The session in which the read should be performed.
-	Session string `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
+	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	// The transaction to use. If none is provided, the default is a
 	// temporary read-only transaction with strong concurrency.
-	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction" json:"transaction,omitempty"`
+	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
 	// Required. The name of the table in the database to be read.
-	Table string `protobuf:"bytes,3,opt,name=table" json:"table,omitempty"`
+	Table string `protobuf:"bytes,3,opt,name=table,proto3" json:"table,omitempty"`
 	// If non-empty, the name of an index on [table][google.spanner.v1.ReadRequest.table]. This index is
 	// used instead of the table primary key when interpreting [key_set][google.spanner.v1.ReadRequest.key_set]
 	// and sorting result rows. See [key_set][google.spanner.v1.ReadRequest.key_set] for further information.
-	Index string `protobuf:"bytes,4,opt,name=index" json:"index,omitempty"`
+	Index string `protobuf:"bytes,4,opt,name=index,proto3" json:"index,omitempty"`
 	// The columns of [table][google.spanner.v1.ReadRequest.table] to be returned for each row matching
 	// this request.
-	Columns []string `protobuf:"bytes,5,rep,name=columns" json:"columns,omitempty"`
+	Columns []string `protobuf:"bytes,5,rep,name=columns,proto3" json:"columns,omitempty"`
 	// Required. `key_set` identifies the rows to be yielded. `key_set` names the
 	// primary keys of the rows in [table][google.spanner.v1.ReadRequest.table] to be yielded, unless [index][google.spanner.v1.ReadRequest.index]
 	// is present. If [index][google.spanner.v1.ReadRequest.index] is present, then [key_set][google.spanner.v1.ReadRequest.key_set] instead names
@@ -930,11 +962,11 @@ type ReadRequest struct {
 	//
 	// It is not an error for the `key_set` to name rows that do not
 	// exist in the database. Read yields nothing for nonexistent rows.
-	KeySet *KeySet `protobuf:"bytes,6,opt,name=key_set,json=keySet" json:"key_set,omitempty"`
+	KeySet *KeySet `protobuf:"bytes,6,opt,name=key_set,json=keySet,proto3" json:"key_set,omitempty"`
 	// If greater than zero, only the first `limit` rows are yielded. If `limit`
 	// is zero, the default is no limit. A limit cannot be specified if
 	// `partition_token` is set.
-	Limit int64 `protobuf:"varint,8,opt,name=limit" json:"limit,omitempty"`
+	Limit int64 `protobuf:"varint,8,opt,name=limit,proto3" json:"limit,omitempty"`
 	// If this request is resuming a previously interrupted read,
 	// `resume_token` should be copied from the last
 	// [PartialResultSet][google.spanner.v1.PartialResultSet] yielded before the interruption. Doing this
@@ -956,7 +988,7 @@ func (m *ReadRequest) Reset()         { *m = ReadRequest{} }
 func (m *ReadRequest) String() string { return proto.CompactTextString(m) }
 func (*ReadRequest) ProtoMessage()    {}
 func (*ReadRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{12}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{12}
 }
 func (m *ReadRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_ReadRequest.Unmarshal(m, b)
@@ -1042,9 +1074,9 @@ func (m *ReadRequest) GetPartitionToken() []byte {
 // The request for [BeginTransaction][google.spanner.v1.Spanner.BeginTransaction].
 type BeginTransactionRequest struct {
 	// Required. The session in which the transaction runs.
-	Session string `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
+	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	// Required. Options for the new transaction.
-	Options              *TransactionOptions `protobuf:"bytes,2,opt,name=options" json:"options,omitempty"`
+	Options              *TransactionOptions `protobuf:"bytes,2,opt,name=options,proto3" json:"options,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
 	XXX_unrecognized     []byte              `json:"-"`
 	XXX_sizecache        int32               `json:"-"`
@@ -1054,7 +1086,7 @@ func (m *BeginTransactionRequest) Reset()         { *m = BeginTransactionRequest
 func (m *BeginTransactionRequest) String() string { return proto.CompactTextString(m) }
 func (*BeginTransactionRequest) ProtoMessage()    {}
 func (*BeginTransactionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{13}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{13}
 }
 func (m *BeginTransactionRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_BeginTransactionRequest.Unmarshal(m, b)
@@ -1091,7 +1123,7 @@ func (m *BeginTransactionRequest) GetOptions() *TransactionOptions {
 // The request for [Commit][google.spanner.v1.Spanner.Commit].
 type CommitRequest struct {
 	// Required. The session in which the transaction to be committed is running.
-	Session string `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
+	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	// Required. The transaction in which to commit.
 	//
 	// Types that are valid to be assigned to Transaction:
@@ -1101,7 +1133,7 @@ type CommitRequest struct {
 	// The mutations to be executed when this transaction commits. All
 	// mutations are applied atomically, in the order they appear in
 	// this list.
-	Mutations            []*Mutation `protobuf:"bytes,4,rep,name=mutations" json:"mutations,omitempty"`
+	Mutations            []*Mutation `protobuf:"bytes,4,rep,name=mutations,proto3" json:"mutations,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}    `json:"-"`
 	XXX_unrecognized     []byte      `json:"-"`
 	XXX_sizecache        int32       `json:"-"`
@@ -1111,7 +1143,7 @@ func (m *CommitRequest) Reset()         { *m = CommitRequest{} }
 func (m *CommitRequest) String() string { return proto.CompactTextString(m) }
 func (*CommitRequest) ProtoMessage()    {}
 func (*CommitRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{14}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{14}
 }
 func (m *CommitRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CommitRequest.Unmarshal(m, b)
@@ -1131,6 +1163,13 @@ func (m *CommitRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CommitRequest proto.InternalMessageInfo
 
+func (m *CommitRequest) GetSession() string {
+	if m != nil {
+		return m.Session
+	}
+	return ""
+}
+
 type isCommitRequest_Transaction interface {
 	isCommitRequest_Transaction()
 }
@@ -1138,11 +1177,13 @@ type isCommitRequest_Transaction interface {
 type CommitRequest_TransactionId struct {
 	TransactionId []byte `protobuf:"bytes,2,opt,name=transaction_id,json=transactionId,proto3,oneof"`
 }
+
 type CommitRequest_SingleUseTransaction struct {
-	SingleUseTransaction *TransactionOptions `protobuf:"bytes,3,opt,name=single_use_transaction,json=singleUseTransaction,oneof"`
+	SingleUseTransaction *TransactionOptions `protobuf:"bytes,3,opt,name=single_use_transaction,json=singleUseTransaction,proto3,oneof"`
 }
 
-func (*CommitRequest_TransactionId) isCommitRequest_Transaction()        {}
+func (*CommitRequest_TransactionId) isCommitRequest_Transaction() {}
+
 func (*CommitRequest_SingleUseTransaction) isCommitRequest_Transaction() {}
 
 func (m *CommitRequest) GetTransaction() isCommitRequest_Transaction {
@@ -1150,13 +1191,6 @@ func (m *CommitRequest) GetTransaction() isCommitRequest_Transaction {
 		return m.Transaction
 	}
 	return nil
-}
-
-func (m *CommitRequest) GetSession() string {
-	if m != nil {
-		return m.Session
-	}
-	return ""
 }
 
 func (m *CommitRequest) GetTransactionId() []byte {
@@ -1253,7 +1287,7 @@ func _CommitRequest_OneofSizer(msg proto.Message) (n int) {
 // The response for [Commit][google.spanner.v1.Spanner.Commit].
 type CommitResponse struct {
 	// The Cloud Spanner timestamp at which the transaction committed.
-	CommitTimestamp      *timestamp.Timestamp `protobuf:"bytes,1,opt,name=commit_timestamp,json=commitTimestamp" json:"commit_timestamp,omitempty"`
+	CommitTimestamp      *timestamp.Timestamp `protobuf:"bytes,1,opt,name=commit_timestamp,json=commitTimestamp,proto3" json:"commit_timestamp,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -1263,7 +1297,7 @@ func (m *CommitResponse) Reset()         { *m = CommitResponse{} }
 func (m *CommitResponse) String() string { return proto.CompactTextString(m) }
 func (*CommitResponse) ProtoMessage()    {}
 func (*CommitResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{15}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{15}
 }
 func (m *CommitResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CommitResponse.Unmarshal(m, b)
@@ -1293,7 +1327,7 @@ func (m *CommitResponse) GetCommitTimestamp() *timestamp.Timestamp {
 // The request for [Rollback][google.spanner.v1.Spanner.Rollback].
 type RollbackRequest struct {
 	// Required. The session in which the transaction to roll back is running.
-	Session string `protobuf:"bytes,1,opt,name=session" json:"session,omitempty"`
+	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
 	// Required. The transaction to roll back.
 	TransactionId        []byte   `protobuf:"bytes,2,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -1305,7 +1339,7 @@ func (m *RollbackRequest) Reset()         { *m = RollbackRequest{} }
 func (m *RollbackRequest) String() string { return proto.CompactTextString(m) }
 func (*RollbackRequest) ProtoMessage()    {}
 func (*RollbackRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_spanner_2868e2a3b5f0aa05, []int{16}
+	return fileDescriptor_spanner_3c084839ce4aa03b, []int{16}
 }
 func (m *RollbackRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RollbackRequest.Unmarshal(m, b)
@@ -1403,12 +1437,12 @@ type SpannerClient interface {
 	ListSessions(ctx context.Context, in *ListSessionsRequest, opts ...grpc.CallOption) (*ListSessionsResponse, error)
 	// Ends a session, releasing server resources associated with it.
 	DeleteSession(ctx context.Context, in *DeleteSessionRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	// Executes an SQL query, returning all rows in a single reply. This
+	// Executes an SQL statement, returning all results in a single reply. This
 	// method cannot be used to return a result set larger than 10 MiB;
 	// if the query yields more data than that, the query fails with
 	// a `FAILED_PRECONDITION` error.
 	//
-	// Queries inside read-write transactions might return `ABORTED`. If
+	// Operations inside read-write transactions might return `ABORTED`. If
 	// this occurs, the application should restart the transaction from
 	// the beginning. See [Transaction][google.spanner.v1.Transaction] for more details.
 	//
@@ -1470,17 +1504,25 @@ type SpannerClient interface {
 	// of the query result to read.  The same session and read-only transaction
 	// must be used by the PartitionQueryRequest used to create the
 	// partition tokens and the ExecuteSqlRequests that use the partition tokens.
+	//
 	// Partition tokens become invalid when the session used to create them
-	// is deleted or begins a new transaction.
+	// is deleted, is idle for too long, begins a new transaction, or becomes too
+	// old.  When any of these happen, it is not possible to resume the query, and
+	// the whole operation must be restarted from the beginning.
 	PartitionQuery(ctx context.Context, in *PartitionQueryRequest, opts ...grpc.CallOption) (*PartitionResponse, error)
 	// Creates a set of partition tokens that can be used to execute a read
 	// operation in parallel.  Each of the returned partition tokens can be used
 	// by [StreamingRead][google.spanner.v1.Spanner.StreamingRead] to specify a subset of the read
 	// result to read.  The same session and read-only transaction must be used by
 	// the PartitionReadRequest used to create the partition tokens and the
-	// ReadRequests that use the partition tokens.
+	// ReadRequests that use the partition tokens.  There are no ordering
+	// guarantees on rows returned among the returned partition tokens, or even
+	// within each individual StreamingRead call issued with a partition_token.
+	//
 	// Partition tokens become invalid when the session used to create them
-	// is deleted or begins a new transaction.
+	// is deleted, is idle for too long, begins a new transaction, or becomes too
+	// old.  When any of these happen, it is not possible to resume the read, and
+	// the whole operation must be restarted from the beginning.
 	PartitionRead(ctx context.Context, in *PartitionReadRequest, opts ...grpc.CallOption) (*PartitionResponse, error)
 }
 
@@ -1655,8 +1697,7 @@ func (c *spannerClient) PartitionRead(ctx context.Context, in *PartitionReadRequ
 	return out, nil
 }
 
-// Server API for Spanner service
-
+// SpannerServer is the server API for Spanner service.
 type SpannerServer interface {
 	// Creates a new session. A session can be used to perform
 	// transactions that read and/or modify data in a Cloud Spanner database.
@@ -1686,12 +1727,12 @@ type SpannerServer interface {
 	ListSessions(context.Context, *ListSessionsRequest) (*ListSessionsResponse, error)
 	// Ends a session, releasing server resources associated with it.
 	DeleteSession(context.Context, *DeleteSessionRequest) (*empty.Empty, error)
-	// Executes an SQL query, returning all rows in a single reply. This
+	// Executes an SQL statement, returning all results in a single reply. This
 	// method cannot be used to return a result set larger than 10 MiB;
 	// if the query yields more data than that, the query fails with
 	// a `FAILED_PRECONDITION` error.
 	//
-	// Queries inside read-write transactions might return `ABORTED`. If
+	// Operations inside read-write transactions might return `ABORTED`. If
 	// this occurs, the application should restart the transaction from
 	// the beginning. See [Transaction][google.spanner.v1.Transaction] for more details.
 	//
@@ -1753,17 +1794,25 @@ type SpannerServer interface {
 	// of the query result to read.  The same session and read-only transaction
 	// must be used by the PartitionQueryRequest used to create the
 	// partition tokens and the ExecuteSqlRequests that use the partition tokens.
+	//
 	// Partition tokens become invalid when the session used to create them
-	// is deleted or begins a new transaction.
+	// is deleted, is idle for too long, begins a new transaction, or becomes too
+	// old.  When any of these happen, it is not possible to resume the query, and
+	// the whole operation must be restarted from the beginning.
 	PartitionQuery(context.Context, *PartitionQueryRequest) (*PartitionResponse, error)
 	// Creates a set of partition tokens that can be used to execute a read
 	// operation in parallel.  Each of the returned partition tokens can be used
 	// by [StreamingRead][google.spanner.v1.Spanner.StreamingRead] to specify a subset of the read
 	// result to read.  The same session and read-only transaction must be used by
 	// the PartitionReadRequest used to create the partition tokens and the
-	// ReadRequests that use the partition tokens.
+	// ReadRequests that use the partition tokens.  There are no ordering
+	// guarantees on rows returned among the returned partition tokens, or even
+	// within each individual StreamingRead call issued with a partition_token.
+	//
 	// Partition tokens become invalid when the session used to create them
-	// is deleted or begins a new transaction.
+	// is deleted, is idle for too long, begins a new transaction, or becomes too
+	// old.  When any of these happen, it is not possible to resume the read, and
+	// the whole operation must be restarted from the beginning.
 	PartitionRead(context.Context, *PartitionReadRequest) (*PartitionResponse, error)
 }
 
@@ -2076,113 +2125,114 @@ var _Spanner_serviceDesc = grpc.ServiceDesc{
 }
 
 func init() {
-	proto.RegisterFile("google/spanner/v1/spanner.proto", fileDescriptor_spanner_2868e2a3b5f0aa05)
+	proto.RegisterFile("google/spanner/v1/spanner.proto", fileDescriptor_spanner_3c084839ce4aa03b)
 }
 
-var fileDescriptor_spanner_2868e2a3b5f0aa05 = []byte{
-	// 1657 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe4, 0x58, 0xdd, 0x6f, 0x53, 0xc9,
-	0x15, 0xe7, 0xda, 0x89, 0x13, 0x1f, 0xc7, 0x89, 0x33, 0x98, 0x60, 0x0c, 0x85, 0x70, 0xf9, 0x48,
-	0x64, 0xa9, 0x36, 0x49, 0x51, 0x15, 0x02, 0x2d, 0x10, 0x08, 0x90, 0x92, 0x10, 0x73, 0x9d, 0x80,
-	0x8a, 0xa8, 0xac, 0xb1, 0x3d, 0xb8, 0xb7, 0xb9, 0x5f, 0xb9, 0x33, 0x8e, 0x62, 0x2a, 0x5e, 0x5a,
-	0xf5, 0xbd, 0x2d, 0xaa, 0xfa, 0xd0, 0xbe, 0xed, 0xdb, 0x8a, 0x47, 0x24, 0xde, 0xf6, 0x65, 0xa5,
-	0x7d, 0x58, 0x69, 0x9f, 0xf6, 0x5f, 0xd8, 0xff, 0x62, 0x5f, 0x56, 0x33, 0xf7, 0xc3, 0xd7, 0xf6,
-	0xc4, 0x31, 0x32, 0xbb, 0xd2, 0x6a, 0x9f, 0x3c, 0x33, 0xe7, 0xcc, 0x9c, 0xdf, 0xfd, 0x9d, 0x33,
-	0x73, 0xce, 0x31, 0x5c, 0x68, 0xda, 0x76, 0xd3, 0x20, 0x25, 0xea, 0x60, 0xcb, 0x22, 0x6e, 0xe9,
-	0x60, 0x29, 0x18, 0x16, 0x1d, 0xd7, 0x66, 0x36, 0x9a, 0xf5, 0x14, 0x8a, 0xc1, 0xea, 0xc1, 0x52,
-	0xfe, 0x9c, 0xbf, 0x07, 0x3b, 0x7a, 0x09, 0x5b, 0x96, 0xcd, 0x30, 0xd3, 0x6d, 0x8b, 0x7a, 0x1b,
-	0xf2, 0x67, 0x7d, 0xa9, 0x98, 0xd5, 0x5a, 0xaf, 0x4a, 0xc4, 0x74, 0x58, 0xdb, 0x17, 0x9e, 0xeb,
-	0x15, 0x52, 0xe6, 0xb6, 0xea, 0xcc, 0x97, 0x5e, 0xe8, 0x95, 0x32, 0xdd, 0x24, 0x94, 0x61, 0xd3,
-	0xe9, 0xd9, 0x1e, 0x41, 0xbb, 0x47, 0xda, 0x81, 0xe5, 0xf9, 0x7e, 0xa9, 0xd9, 0xf2, 0xc0, 0xf9,
-	0x1a, 0x6a, 0xbf, 0x86, 0x4b, 0x68, 0xcb, 0x60, 0x55, 0x4a, 0x02, 0x10, 0x97, 0xfa, 0x75, 0x98,
-	0x8b, 0x2d, 0x8a, 0xeb, 0x91, 0x83, 0x24, 0x40, 0x58, 0xdb, 0x21, 0x9e, 0x54, 0xfd, 0x33, 0x64,
-	0xef, 0xb9, 0x04, 0x33, 0x52, 0x21, 0x94, 0xea, 0xb6, 0xa5, 0x91, 0xfd, 0x16, 0xa1, 0x0c, 0xe5,
-	0x61, 0xb2, 0x81, 0x19, 0xae, 0x61, 0x4a, 0x72, 0xca, 0xbc, 0xb2, 0x98, 0xd4, 0xc2, 0x39, 0xba,
-	0x0e, 0x13, 0xd4, 0xd3, 0xce, 0xc5, 0xe6, 0x95, 0xc5, 0xd4, 0x72, 0xbe, 0xd8, 0xc7, 0x7c, 0x31,
-	0x38, 0x2f, 0x50, 0x55, 0xdf, 0xc5, 0x60, 0xc2, 0x5f, 0x44, 0x08, 0xc6, 0x2c, 0x6c, 0x06, 0x27,
-	0x8b, 0x31, 0xfa, 0x3d, 0x24, 0x0c, 0x5c, 0x23, 0x06, 0xcd, 0xc5, 0xe6, 0xe3, 0x8b, 0xa9, 0xe5,
-	0xab, 0x47, 0x1f, 0x5a, 0xdc, 0x14, 0x8a, 0xeb, 0x16, 0x73, 0xdb, 0x9a, 0xbf, 0x0b, 0xdd, 0x84,
-	0x54, 0x5d, 0x7c, 0x49, 0x95, 0xbb, 0x22, 0x17, 0xef, 0x46, 0x16, 0xf8, 0xa9, 0xb8, 0x13, 0xf8,
-	0x49, 0x03, 0x4f, 0x9d, 0x2f, 0xa0, 0x5d, 0x38, 0x83, 0x1d, 0xc7, 0xb5, 0x0f, 0x75, 0x93, 0x9f,
-	0x60, 0x60, 0xca, 0xaa, 0x2d, 0xea, 0x1f, 0x35, 0x76, 0xec, 0x51, 0x73, 0x91, 0xcd, 0x9b, 0x98,
-	0xb2, 0x5d, 0x2a, 0x8e, 0xcd, 0xdf, 0x80, 0x54, 0x04, 0x2a, 0xca, 0x40, 0x7c, 0x8f, 0xb4, 0xfd,
-	0xaf, 0xe6, 0x43, 0x94, 0x85, 0xf1, 0x03, 0x6c, 0xb4, 0x88, 0x20, 0x32, 0xa9, 0x79, 0x93, 0xd5,
-	0xd8, 0x8a, 0xa2, 0x2e, 0xc0, 0xec, 0x43, 0xc2, 0x7a, 0xbc, 0x22, 0xe1, 0x4d, 0xfd, 0x87, 0x02,
-	0x27, 0x37, 0x75, 0x1a, 0xa8, 0xd2, 0x61, 0x3c, 0x78, 0x16, 0x92, 0x0e, 0x6e, 0x92, 0x2a, 0xd5,
-	0x5f, 0x7b, 0xa6, 0xc7, 0xb5, 0x49, 0xbe, 0x50, 0xd1, 0x5f, 0x13, 0xf4, 0x2b, 0x00, 0x21, 0x64,
-	0xf6, 0x1e, 0xb1, 0x04, 0x8f, 0x49, 0x4d, 0xa8, 0xef, 0xf0, 0x05, 0x34, 0x07, 0x89, 0x57, 0xba,
-	0xc1, 0x88, 0x2b, 0x78, 0x49, 0x6a, 0xfe, 0x4c, 0x3d, 0x80, 0x6c, 0x37, 0x0c, 0xea, 0xd8, 0x16,
-	0x25, 0xe8, 0xb7, 0x30, 0xe9, 0x87, 0x00, 0xcd, 0x29, 0xc2, 0xb3, 0x83, 0xc2, 0x25, 0xd4, 0x45,
-	0x57, 0x61, 0xc6, 0x22, 0x87, 0xac, 0x1a, 0xc1, 0xe2, 0x91, 0x94, 0xe6, 0xcb, 0xe5, 0x00, 0x8f,
-	0x5a, 0x80, 0xec, 0x7d, 0x62, 0x90, 0xbe, 0x08, 0x96, 0x71, 0xf5, 0x7e, 0x0c, 0x66, 0xd7, 0x0f,
-	0x49, 0xbd, 0xc5, 0x48, 0x65, 0xdf, 0x08, 0x34, 0x73, 0x9d, 0x78, 0xf6, 0x94, 0x83, 0x29, 0x7a,
-	0x04, 0xa9, 0xc8, 0x85, 0xf2, 0xa3, 0x5d, 0x16, 0x98, 0x3b, 0x1d, 0xad, 0x0a, 0x31, 0x48, 0x9d,
-	0xd9, 0xae, 0x16, 0xdd, 0xca, 0x5d, 0x4f, 0xf7, 0x0d, 0x9f, 0x4d, 0x3e, 0x44, 0x25, 0x48, 0x38,
-	0xd8, 0xc5, 0x26, 0xf5, 0xe3, 0xeb, 0x74, 0x5f, 0x7c, 0x55, 0xc4, 0x83, 0xa3, 0xf9, 0x6a, 0x68,
-	0x17, 0x52, 0x62, 0x54, 0xe5, 0xd7, 0x97, 0xe6, 0xc6, 0x05, 0x97, 0xd7, 0x25, 0x60, 0xfa, 0xbe,
-	0xb0, 0x58, 0xe6, 0xfb, 0x76, 0xf8, 0x36, 0xef, 0xce, 0x80, 0x13, 0x2e, 0xa0, 0x8b, 0x30, 0xc5,
-	0x1f, 0x16, 0x33, 0x20, 0x39, 0x31, 0xaf, 0x2c, 0x4e, 0x69, 0x29, 0x6f, 0xcd, 0x73, 0xf9, 0x16,
-	0xc0, 0x7e, 0x8b, 0xb8, 0xed, 0xaa, 0x69, 0x37, 0x48, 0x6e, 0x62, 0x5e, 0x59, 0x9c, 0x5e, 0x2e,
-	0x0e, 0x65, 0xf8, 0x29, 0xdf, 0xb6, 0x65, 0x37, 0x88, 0x96, 0xdc, 0x0f, 0x86, 0x68, 0x01, 0x66,
-	0x1c, 0xec, 0x32, 0x9d, 0x13, 0xe3, 0x1b, 0x9d, 0x14, 0x46, 0xa7, 0xc3, 0x65, 0x61, 0x37, 0xff,
-	0x0c, 0x66, 0x7a, 0x90, 0x4b, 0xae, 0xd0, 0xaf, 0xa3, 0x57, 0x28, 0x42, 0x63, 0xd4, 0x3b, 0x6d,
-	0x87, 0x44, 0xef, 0x56, 0x11, 0x92, 0x21, 0x30, 0x04, 0x90, 0x78, 0xb2, 0xad, 0x6d, 0xdd, 0xdd,
-	0xcc, 0x9c, 0x40, 0x93, 0x30, 0x56, 0xde, 0xbc, 0xfb, 0x24, 0xa3, 0xa0, 0x14, 0x4c, 0x94, 0xb5,
-	0xed, 0x07, 0x1b, 0x9b, 0xeb, 0x99, 0x98, 0xba, 0x07, 0x99, 0x72, 0x80, 0x6c, 0xdb, 0x11, 0x19,
-	0x04, 0x5d, 0x83, 0x6c, 0xe7, 0x23, 0xf8, 0x3d, 0xaa, 0xd6, 0xda, 0x8c, 0x50, 0x81, 0x2c, 0xae,
-	0xa1, 0x50, 0xc6, 0xaf, 0xd4, 0x1a, 0x97, 0xa0, 0x2b, 0x30, 0x6d, 0xe2, 0xc3, 0x6a, 0x28, 0xa1,
-	0x02, 0x71, 0x5c, 0x4b, 0x9b, 0xf8, 0x30, 0x3c, 0x9e, 0xaa, 0x5f, 0xc6, 0xe1, 0x54, 0x38, 0x15,
-	0x30, 0x7f, 0x66, 0x71, 0xfa, 0x47, 0x59, 0x9c, 0xae, 0x48, 0xc0, 0x48, 0xbf, 0x72, 0x60, 0xac,
-	0x96, 0x61, 0xb6, 0x43, 0xba, 0xed, 0x79, 0x42, 0x04, 0x6c, 0x6a, 0xf9, 0xd2, 0x20, 0x03, 0xbe,
-	0xd3, 0xb4, 0x8c, 0xd3, 0xb3, 0xf2, 0xa3, 0x85, 0xd8, 0x57, 0x31, 0xc8, 0x86, 0xe6, 0x35, 0x82,
-	0x1b, 0x3f, 0xa5, 0x13, 0xb3, 0x30, 0xce, 0x70, 0xcd, 0x20, 0xbe, 0x1b, 0xbd, 0x09, 0x5f, 0xd5,
-	0xad, 0x06, 0x39, 0xf4, 0xdf, 0x6d, 0x6f, 0xc2, 0xf1, 0xd4, 0x6d, 0xa3, 0x65, 0x5a, 0x9e, 0xa7,
-	0x92, 0x5a, 0x30, 0x45, 0xcb, 0x30, 0xb1, 0x47, 0xda, 0xbc, 0xdc, 0xf0, 0x29, 0x3e, 0x23, 0xc1,
-	0xf2, 0x98, 0xb4, 0x2b, 0x84, 0x69, 0x89, 0x3d, 0xf1, 0x2b, 0x77, 0x50, 0x72, 0x04, 0x07, 0xa9,
-	0xd7, 0x21, 0x19, 0x6a, 0xc9, 0x5e, 0x0e, 0x45, 0xf6, 0x72, 0xa8, 0x6f, 0x15, 0x98, 0x8d, 0xd0,
-	0xef, 0xa7, 0xa2, 0x5b, 0x3c, 0xb3, 0x85, 0xb7, 0xcf, 0x4b, 0x46, 0xe7, 0x06, 0xc1, 0xd2, 0x22,
-	0xfa, 0xe8, 0x8e, 0xcc, 0x3f, 0xe7, 0x07, 0xfb, 0xa7, 0xcb, 0x2f, 0xea, 0x37, 0x31, 0x48, 0xfd,
-	0x72, 0x62, 0x21, 0x0b, 0xe3, 0x86, 0x6e, 0xea, 0x4c, 0x3c, 0xee, 0x71, 0xcd, 0x9b, 0xf4, 0xa5,
-	0x9b, 0x64, 0x7f, 0xba, 0x91, 0x78, 0x19, 0xa4, 0x5e, 0x66, 0x70, 0x7a, 0x8d, 0x34, 0x75, 0x2b,
-	0x4a, 0xf8, 0xb1, 0xd4, 0xde, 0x86, 0x89, 0x20, 0x30, 0x3d, 0x5a, 0xaf, 0x0c, 0xa6, 0x35, 0x08,
-	0xcd, 0x60, 0x97, 0xfa, 0xbd, 0x02, 0xe9, 0x7b, 0xb6, 0x69, 0xea, 0xec, 0x78, 0x63, 0x0b, 0x30,
-	0x1d, 0x71, 0x46, 0x55, 0x6f, 0x08, 0x9b, 0x53, 0x8f, 0x4e, 0x68, 0xe9, 0xc8, 0xfa, 0x46, 0x03,
-	0xfd, 0x09, 0xe6, 0xa8, 0x6e, 0x35, 0x0d, 0xe2, 0x95, 0x9d, 0x11, 0xdf, 0xc7, 0x3f, 0x02, 0xe4,
-	0xa3, 0x13, 0x5a, 0xd6, 0x3b, 0x86, 0x57, 0xa0, 0x91, 0x28, 0xb8, 0x01, 0xc9, 0xa0, 0xbf, 0xe0,
-	0xef, 0x38, 0x0f, 0xfc, 0xb3, 0x92, 0x13, 0xb7, 0x7c, 0x1d, 0xad, 0xa3, 0xbd, 0x96, 0xee, 0x0a,
-	0x45, 0xf5, 0x39, 0x4c, 0x07, 0x1f, 0xef, 0xdf, 0xaa, 0x75, 0xc8, 0xd4, 0xc5, 0x4a, 0x35, 0xec,
-	0x81, 0x04, 0x0d, 0x83, 0x4b, 0xe6, 0x19, 0x6f, 0x4f, 0xb8, 0xa0, 0x6a, 0x30, 0xa3, 0xd9, 0x86,
-	0x51, 0xc3, 0xf5, 0xbd, 0xe3, 0x79, 0xbd, 0x22, 0xe7, 0xb5, 0x87, 0xd5, 0xe5, 0xbf, 0xcf, 0xc2,
-	0x44, 0xc5, 0xfb, 0x3c, 0xf4, 0x3f, 0xee, 0xb6, 0x68, 0xab, 0x83, 0x16, 0x24, 0x0c, 0xc8, 0x9a,
-	0xa1, 0xfc, 0x80, 0x82, 0x55, 0x5d, 0xff, 0xdb, 0xb7, 0xdf, 0xbd, 0x8d, 0xdd, 0x56, 0x57, 0x79,
-	0x63, 0xf5, 0xd7, 0xa0, 0xc2, 0xfe, 0x9d, 0xe3, 0xda, 0x7f, 0x21, 0x75, 0x46, 0x4b, 0x85, 0x92,
-	0x6e, 0x51, 0x86, 0xad, 0x3a, 0xe1, 0xe3, 0x40, 0x4e, 0x4b, 0x85, 0x37, 0xa5, 0xa0, 0xd4, 0x5d,
-	0x55, 0x0a, 0xe8, 0x9f, 0x0a, 0x40, 0xa7, 0xde, 0x47, 0x97, 0x25, 0x16, 0xfb, 0xda, 0x81, 0x81,
-	0xb8, 0xee, 0x08, 0x5c, 0xab, 0x68, 0x45, 0xe0, 0xe2, 0xd5, 0xef, 0x10, 0x98, 0x42, 0x48, 0xa5,
-	0xc2, 0x1b, 0xf4, 0x99, 0x02, 0x53, 0xd1, 0x8a, 0x1e, 0xc9, 0xde, 0x1f, 0x49, 0xe7, 0x91, 0x5f,
-	0x38, 0x56, 0xcf, 0x8b, 0x1c, 0x75, 0x4d, 0x60, 0xbc, 0x85, 0x46, 0xe0, 0x0e, 0xfd, 0x5b, 0x81,
-	0x74, 0x57, 0xfd, 0x2f, 0x75, 0xab, 0xac, 0x43, 0xc8, 0xcf, 0xf5, 0x85, 0xe7, 0x3a, 0xef, 0xff,
-	0x03, 0xea, 0x0a, 0x23, 0x51, 0x07, 0x9d, 0x62, 0x58, 0xea, 0xcd, 0xbe, 0x5a, 0x39, 0x2f, 0xcb,
-	0x44, 0x9a, 0x68, 0xf9, 0x2b, 0x84, 0xa9, 0x4f, 0x05, 0xa8, 0xc7, 0xea, 0x03, 0x01, 0xca, 0x37,
-	0xf6, 0x91, 0xb8, 0x56, 0x49, 0x68, 0x94, 0xc7, 0xdc, 0x17, 0x0a, 0x9c, 0x0c, 0x60, 0x30, 0x97,
-	0x60, 0x53, 0xb7, 0x9a, 0xc3, 0xc3, 0x3d, 0x32, 0x9f, 0x63, 0xa3, 0x83, 0xfa, 0x85, 0x40, 0xbd,
-	0xa3, 0x6e, 0x7f, 0x0a, 0xd4, 0x11, 0x8c, 0xab, 0x4a, 0xe1, 0x9a, 0x82, 0xfe, 0xa5, 0xc0, 0x18,
-	0xcf, 0xa7, 0xe8, 0xbc, 0x94, 0xba, 0x30, 0xd1, 0x1e, 0x43, 0xed, 0x63, 0x01, 0x72, 0x5d, 0xbd,
-	0x33, 0x0a, 0x48, 0x97, 0xe0, 0x06, 0x27, 0xf5, 0x9d, 0x02, 0xe9, 0x10, 0xe9, 0x50, 0xe0, 0x86,
-	0x22, 0x72, 0x47, 0x60, 0x7c, 0xa2, 0x6e, 0x8c, 0x82, 0x91, 0x46, 0x71, 0x79, 0x14, 0x7e, 0x50,
-	0x20, 0xd3, 0x9b, 0x43, 0x51, 0x41, 0x82, 0xe8, 0x88, 0x44, 0x9b, 0x3f, 0xa6, 0x00, 0x52, 0x9f,
-	0x0b, 0xe0, 0x4f, 0xd5, 0xcd, 0x51, 0x80, 0xd7, 0x7a, 0x8c, 0x73, 0xa2, 0xff, 0xaf, 0x40, 0xc2,
-	0xcb, 0x44, 0x68, 0x5e, 0xf6, 0x90, 0x47, 0x33, 0x74, 0xfe, 0xe2, 0x00, 0x0d, 0xff, 0x31, 0xda,
-	0x12, 0x40, 0x1f, 0xaa, 0x6b, 0xa3, 0x00, 0xf5, 0x92, 0x1a, 0x87, 0xf7, 0x5f, 0x05, 0x26, 0x83,
-	0x7c, 0x86, 0x54, 0x59, 0x08, 0x74, 0x27, 0xbb, 0x23, 0x5f, 0xa3, 0x6d, 0x81, 0x6b, 0x43, 0xbd,
-	0x3f, 0x52, 0x74, 0xfa, 0xc6, 0x38, 0xb2, 0x0f, 0x0a, 0x4c, 0x77, 0xb7, 0x5e, 0x68, 0x71, 0xd8,
-	0xee, 0x2c, 0x7f, 0x79, 0x60, 0xb9, 0x1c, 0x70, 0xb9, 0x2b, 0x30, 0x6f, 0xab, 0x7f, 0x18, 0x05,
-	0xb3, 0xd3, 0x05, 0x80, 0x23, 0x7f, 0xaf, 0x40, 0xba, 0xab, 0xa9, 0x92, 0xbe, 0xf5, 0xb2, 0xb6,
-	0x6b, 0x48, 0xdc, 0x9f, 0xe4, 0x96, 0x39, 0x51, 0xfb, 0xab, 0x4a, 0x61, 0xed, 0x3f, 0x0a, 0x9c,
-	0xaa, 0xdb, 0x66, 0x3f, 0x82, 0xb5, 0x29, 0xbf, 0x38, 0x29, 0x73, 0x97, 0x97, 0x95, 0x17, 0x2b,
-	0xbe, 0x4a, 0xd3, 0x36, 0xb0, 0xd5, 0x2c, 0xda, 0x6e, 0xb3, 0xd4, 0x24, 0x96, 0x08, 0x88, 0x92,
-	0x27, 0xc2, 0x8e, 0x4e, 0x23, 0x7f, 0xe5, 0xde, 0xf4, 0x87, 0x9f, 0xc7, 0x4e, 0x3f, 0xf4, 0xb6,
-	0xde, 0x33, 0xec, 0x56, 0xa3, 0xe8, 0x9f, 0x5b, 0x7c, 0xb6, 0xf4, 0x75, 0x20, 0x79, 0x29, 0x24,
-	0x2f, 0x7d, 0xc9, 0xcb, 0x67, 0x4b, 0xb5, 0x84, 0x38, 0xf8, 0x37, 0x3f, 0x04, 0x00, 0x00, 0xff,
-	0xff, 0x92, 0x18, 0x4b, 0x1c, 0x59, 0x17, 0x00, 0x00,
+var fileDescriptor_spanner_3c084839ce4aa03b = []byte{
+	// 1673 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe4, 0x58, 0x4f, 0x6f, 0x1b, 0xb9,
+	0x15, 0xcf, 0x48, 0xb6, 0x6c, 0x3d, 0x59, 0xb6, 0xcc, 0xd5, 0x3a, 0x5a, 0x25, 0xdd, 0xd5, 0xce,
+	0x6e, 0xd6, 0x86, 0x80, 0x4a, 0x6b, 0x37, 0x28, 0xbc, 0xde, 0x6d, 0x93, 0x38, 0x71, 0x12, 0x37,
+	0x76, 0xac, 0x8c, 0xec, 0x04, 0x0d, 0x52, 0x08, 0x94, 0xc4, 0xa8, 0x53, 0xcf, 0x3f, 0x0f, 0x29,
+	0xc3, 0x4a, 0x91, 0x4b, 0x8b, 0xde, 0xdb, 0x06, 0x45, 0x0f, 0xed, 0xad, 0xb7, 0x22, 0xc7, 0x02,
+	0xb9, 0xf5, 0x52, 0xa0, 0x87, 0x00, 0x3d, 0xf5, 0x2b, 0xf4, 0x5b, 0xf4, 0x52, 0x90, 0x9c, 0x19,
+	0x8d, 0x24, 0x5a, 0x56, 0xa0, 0xb4, 0x40, 0xb1, 0x27, 0x0d, 0xf9, 0x1e, 0xf9, 0x7e, 0xfc, 0xbd,
+	0x47, 0xbe, 0xf7, 0x04, 0x9f, 0x74, 0x5c, 0xb7, 0x63, 0x91, 0x2a, 0xf5, 0xb0, 0xe3, 0x10, 0xbf,
+	0x7a, 0xba, 0x1e, 0x7e, 0x56, 0x3c, 0xdf, 0x65, 0x2e, 0x5a, 0x96, 0x0a, 0x95, 0x70, 0xf6, 0x74,
+	0xbd, 0x78, 0x35, 0x58, 0x83, 0x3d, 0xb3, 0x8a, 0x1d, 0xc7, 0x65, 0x98, 0x99, 0xae, 0x43, 0xe5,
+	0x82, 0xe2, 0x95, 0x40, 0x2a, 0x46, 0xcd, 0xee, 0xf3, 0x2a, 0xb1, 0x3d, 0xd6, 0x0b, 0x84, 0x57,
+	0x87, 0x85, 0x94, 0xf9, 0xdd, 0x16, 0x0b, 0xa4, 0x9f, 0x0c, 0x4b, 0x99, 0x69, 0x13, 0xca, 0xb0,
+	0xed, 0x0d, 0x2d, 0x8f, 0xa1, 0x3d, 0x26, 0xbd, 0xd0, 0x72, 0x69, 0x54, 0x6a, 0x77, 0x25, 0xb8,
+	0x40, 0x43, 0x1f, 0xd5, 0xf0, 0x09, 0xed, 0x5a, 0xac, 0x41, 0x49, 0x08, 0xe2, 0xb3, 0x51, 0x1d,
+	0xe6, 0x63, 0x87, 0xe2, 0x56, 0x6c, 0x23, 0x05, 0x10, 0xd6, 0xf3, 0x88, 0x94, 0xea, 0x3f, 0x85,
+	0xfc, 0x6d, 0x9f, 0x60, 0x46, 0xea, 0x84, 0x52, 0xd3, 0x75, 0x0c, 0x72, 0xd2, 0x25, 0x94, 0xa1,
+	0x22, 0xcc, 0xb7, 0x31, 0xc3, 0x4d, 0x4c, 0x49, 0x41, 0x2b, 0x69, 0x6b, 0x69, 0x23, 0x1a, 0xa3,
+	0xeb, 0x30, 0x47, 0xa5, 0x76, 0x21, 0x51, 0xd2, 0xd6, 0x32, 0x1b, 0xc5, 0xca, 0x08, 0xf3, 0x95,
+	0x70, 0xbf, 0x50, 0x55, 0x7f, 0x9d, 0x80, 0xb9, 0x60, 0x12, 0x21, 0x98, 0x71, 0xb0, 0x1d, 0xee,
+	0x2c, 0xbe, 0xd1, 0x0f, 0x21, 0x65, 0xe1, 0x26, 0xb1, 0x68, 0x21, 0x51, 0x4a, 0xae, 0x65, 0x36,
+	0xbe, 0x38, 0x7f, 0xd3, 0xca, 0x9e, 0x50, 0xdc, 0x71, 0x98, 0xdf, 0x33, 0x82, 0x55, 0xe8, 0x6b,
+	0xc8, 0xb4, 0xc4, 0x49, 0x1a, 0xdc, 0x15, 0x85, 0xe4, 0x20, 0xb2, 0xd0, 0x4f, 0x95, 0xc3, 0xd0,
+	0x4f, 0x06, 0x48, 0x75, 0x3e, 0x81, 0x8e, 0xe0, 0x23, 0xec, 0x79, 0xbe, 0x7b, 0x66, 0xda, 0x7c,
+	0x07, 0x0b, 0x53, 0xd6, 0xe8, 0xd2, 0x60, 0xab, 0x99, 0x0b, 0xb7, 0x5a, 0x89, 0x2d, 0xde, 0xc3,
+	0x94, 0x1d, 0x51, 0xb1, 0x6d, 0xf1, 0x2b, 0xc8, 0xc4, 0xa0, 0xa2, 0x1c, 0x24, 0x8f, 0x49, 0x2f,
+	0x38, 0x35, 0xff, 0x44, 0x79, 0x98, 0x3d, 0xc5, 0x56, 0x97, 0x08, 0x22, 0xd3, 0x86, 0x1c, 0x6c,
+	0x25, 0x36, 0x35, 0x7d, 0x15, 0x96, 0xef, 0x11, 0x36, 0xe4, 0x15, 0x05, 0x6f, 0xfa, 0xaf, 0x34,
+	0xf8, 0x60, 0xcf, 0xa4, 0xa1, 0x2a, 0x9d, 0xc4, 0x83, 0x57, 0x20, 0xed, 0xe1, 0x0e, 0x69, 0x50,
+	0xf3, 0x85, 0x34, 0x3d, 0x6b, 0xcc, 0xf3, 0x89, 0xba, 0xf9, 0x82, 0xa0, 0xef, 0x00, 0x08, 0x21,
+	0x73, 0x8f, 0x89, 0x23, 0x78, 0x4c, 0x1b, 0x42, 0xfd, 0x90, 0x4f, 0xa0, 0x15, 0x48, 0x3d, 0x37,
+	0x2d, 0x46, 0x7c, 0xc1, 0x4b, 0xda, 0x08, 0x46, 0xfa, 0x29, 0xe4, 0x07, 0x61, 0x50, 0xcf, 0x75,
+	0x28, 0x41, 0xdf, 0x87, 0xf9, 0x20, 0x04, 0x68, 0x41, 0x13, 0x9e, 0x1d, 0x17, 0x2e, 0x91, 0x2e,
+	0xfa, 0x02, 0x96, 0x1c, 0x72, 0xc6, 0x1a, 0x31, 0x2c, 0x92, 0xa4, 0x2c, 0x9f, 0xae, 0x85, 0x78,
+	0xf4, 0x32, 0xe4, 0xef, 0x10, 0x8b, 0x8c, 0x44, 0xb0, 0x8a, 0xab, 0xb7, 0x33, 0xb0, 0xbc, 0x73,
+	0x46, 0x5a, 0x5d, 0x46, 0xea, 0x27, 0x56, 0xa8, 0x59, 0xe8, 0xc7, 0xb3, 0x54, 0x0e, 0x87, 0xe8,
+	0x3e, 0x64, 0x62, 0x17, 0x2a, 0x88, 0x76, 0x55, 0x60, 0x1e, 0xf6, 0xb5, 0xea, 0xc4, 0x22, 0x2d,
+	0xe6, 0xfa, 0x46, 0x7c, 0x29, 0x77, 0x3d, 0x3d, 0xb1, 0x02, 0x36, 0xf9, 0x27, 0xaa, 0x42, 0xca,
+	0xc3, 0x3e, 0xb6, 0x69, 0x10, 0x5f, 0x97, 0x47, 0xe2, 0xab, 0x2e, 0x1e, 0x1c, 0x23, 0x50, 0x43,
+	0x47, 0x90, 0x11, 0x5f, 0x0d, 0x7e, 0x7d, 0x69, 0x61, 0x56, 0x70, 0x79, 0x5d, 0x01, 0x66, 0xe4,
+	0x84, 0x95, 0x1a, 0x5f, 0x77, 0xc8, 0x97, 0xc9, 0x3b, 0x03, 0x5e, 0x34, 0x81, 0x3e, 0x85, 0x05,
+	0xfe, 0xb0, 0xd8, 0x21, 0xc9, 0xa9, 0x92, 0xb6, 0xb6, 0x60, 0x64, 0xe4, 0x9c, 0x74, 0xf9, 0x3e,
+	0xc0, 0x49, 0x97, 0xf8, 0xbd, 0x86, 0xed, 0xb6, 0x49, 0x61, 0xae, 0xa4, 0xad, 0x2d, 0x6e, 0x54,
+	0x26, 0x32, 0xfc, 0x88, 0x2f, 0xdb, 0x77, 0xdb, 0xc4, 0x48, 0x9f, 0x84, 0x9f, 0x68, 0x15, 0x96,
+	0x3c, 0xec, 0x33, 0x93, 0x13, 0x13, 0x18, 0x9d, 0x17, 0x46, 0x17, 0xa3, 0x69, 0x69, 0x37, 0x0f,
+	0xb3, 0x94, 0x9c, 0x38, 0x6e, 0x21, 0x5d, 0xd2, 0xd6, 0x92, 0x86, 0x1c, 0x14, 0x1f, 0xc3, 0xd2,
+	0xd0, 0x79, 0x14, 0x17, 0xeb, 0xbb, 0xf1, 0x8b, 0x15, 0x23, 0x37, 0xee, 0xb3, 0x9e, 0x47, 0xe2,
+	0x37, 0xae, 0x02, 0xe9, 0x08, 0x2e, 0x02, 0x48, 0x3d, 0x3c, 0x30, 0xf6, 0x6f, 0xed, 0xe5, 0x2e,
+	0xa1, 0x79, 0x98, 0xa9, 0xed, 0xdd, 0x7a, 0x98, 0xd3, 0x50, 0x06, 0xe6, 0x6a, 0xc6, 0xc1, 0xdd,
+	0xdd, 0xbd, 0x9d, 0x5c, 0x42, 0x3f, 0x86, 0x5c, 0x2d, 0xc4, 0x7b, 0xe0, 0x89, 0xbc, 0x82, 0xbe,
+	0x84, 0x7c, 0xff, 0x68, 0xfc, 0x76, 0x35, 0x9a, 0x3d, 0x46, 0xa8, 0x40, 0x96, 0x34, 0x50, 0x24,
+	0xe3, 0x17, 0x6d, 0x9b, 0x4b, 0xd0, 0x35, 0x58, 0xb4, 0xf1, 0x59, 0x23, 0x92, 0x50, 0x81, 0x38,
+	0x69, 0x64, 0x6d, 0x7c, 0x16, 0x6d, 0x4f, 0xf5, 0xbf, 0x25, 0xe1, 0xc3, 0x68, 0x28, 0x60, 0xfe,
+	0x9f, 0x45, 0xef, 0x8f, 0x55, 0xd1, 0xbb, 0xa9, 0x00, 0xa3, 0x3c, 0xe5, 0xd8, 0x08, 0xae, 0xc1,
+	0x72, 0x9f, 0x74, 0x57, 0x7a, 0x42, 0x84, 0x71, 0x66, 0xe3, 0xb3, 0x71, 0x06, 0x02, 0xa7, 0x19,
+	0x39, 0x6f, 0x68, 0xe6, 0xbf, 0x16, 0x62, 0x7f, 0x4f, 0x40, 0x3e, 0x32, 0x6f, 0x10, 0xdc, 0xfe,
+	0x5f, 0x3a, 0x31, 0x0f, 0xb3, 0x0c, 0x37, 0x2d, 0x12, 0xb8, 0x51, 0x0e, 0xf8, 0xac, 0xe9, 0xb4,
+	0xc9, 0x59, 0xf0, 0x9a, 0xcb, 0x01, 0xc7, 0xd3, 0x72, 0xad, 0xae, 0xed, 0x48, 0x4f, 0xa5, 0x8d,
+	0x70, 0x88, 0x36, 0x60, 0xee, 0x98, 0xf4, 0x78, 0x11, 0x12, 0x50, 0xfc, 0x91, 0x02, 0xcb, 0x03,
+	0xd2, 0xab, 0x13, 0x66, 0xa4, 0x8e, 0xc5, 0xaf, 0xda, 0x41, 0xe9, 0x29, 0x1c, 0xa4, 0x5f, 0x87,
+	0x74, 0xa4, 0xa5, 0x7a, 0x4f, 0x34, 0xd5, 0x7b, 0xa2, 0xbf, 0xd2, 0x60, 0x39, 0x46, 0x7f, 0x90,
+	0xa0, 0xbe, 0xe1, 0xf9, 0x2e, 0xba, 0x7d, 0x32, 0x45, 0x5d, 0x1d, 0x07, 0xcb, 0x88, 0xe9, 0xa3,
+	0x9b, 0x2a, 0xff, 0x7c, 0x3c, 0xde, 0x3f, 0x03, 0x7e, 0xd1, 0xff, 0x91, 0x80, 0xcc, 0xb7, 0x27,
+	0x16, 0xf2, 0x30, 0x6b, 0x99, 0xb6, 0xc9, 0xc4, 0x93, 0x9f, 0x34, 0xe4, 0x60, 0x24, 0x09, 0xa5,
+	0x47, 0x93, 0x90, 0xc2, 0xcb, 0xa0, 0xf4, 0x32, 0x83, 0xcb, 0xdb, 0xa4, 0x63, 0x3a, 0x71, 0xc2,
+	0x2f, 0xa4, 0xf6, 0x06, 0xcc, 0x85, 0x81, 0x29, 0x69, 0xbd, 0x36, 0x9e, 0xd6, 0x30, 0x34, 0xc3,
+	0x55, 0xfa, 0xbf, 0x35, 0xc8, 0xde, 0x76, 0x6d, 0xdb, 0x64, 0x17, 0x1b, 0x5b, 0x85, 0xc5, 0x98,
+	0x33, 0x1a, 0x66, 0x5b, 0xd8, 0x5c, 0xb8, 0x7f, 0xc9, 0xc8, 0xc6, 0xe6, 0x77, 0xdb, 0xe8, 0x27,
+	0xb0, 0x42, 0x4d, 0xa7, 0x63, 0x11, 0x59, 0x8c, 0xc6, 0x7c, 0x9f, 0x7c, 0x07, 0x90, 0xf7, 0x2f,
+	0x19, 0x79, 0xb9, 0x0d, 0xaf, 0x4b, 0x63, 0x51, 0xf0, 0x15, 0xa4, 0xc3, 0xae, 0x83, 0xbf, 0xe3,
+	0x3c, 0xf0, 0xaf, 0x28, 0x76, 0xdc, 0x0f, 0x74, 0x8c, 0xbe, 0xf6, 0x76, 0x76, 0x20, 0x14, 0xf5,
+	0x27, 0xb0, 0x18, 0x1e, 0x3e, 0xb8, 0x55, 0x3b, 0x90, 0x6b, 0x89, 0x99, 0x46, 0xd4, 0x19, 0x09,
+	0x1a, 0xc6, 0x17, 0xd2, 0x4b, 0x72, 0x4d, 0x34, 0xa1, 0x1b, 0xb0, 0x64, 0xb8, 0x96, 0xd5, 0xc4,
+	0xad, 0xe3, 0x8b, 0x79, 0xbd, 0xa6, 0xe6, 0x75, 0x88, 0xd5, 0x8d, 0x5f, 0x2e, 0xc3, 0x5c, 0x5d,
+	0x1e, 0x0f, 0xfd, 0x81, 0xbb, 0x2d, 0xde, 0x00, 0xa1, 0x55, 0x05, 0x03, 0xaa, 0x16, 0xa9, 0x38,
+	0xa6, 0x8c, 0xd5, 0x77, 0x7e, 0xf1, 0xcf, 0x7f, 0xbd, 0x4a, 0xdc, 0xd0, 0xb7, 0x78, 0xbb, 0xf5,
+	0xf3, 0xb0, 0xee, 0xfe, 0x81, 0xe7, 0xbb, 0x3f, 0x23, 0x2d, 0x46, 0xab, 0xe5, 0xaa, 0xe9, 0x50,
+	0x86, 0x9d, 0x16, 0xe1, 0xdf, 0xa1, 0x9c, 0x56, 0xcb, 0x2f, 0xab, 0x61, 0x01, 0xbc, 0xa5, 0x95,
+	0xd1, 0xaf, 0x35, 0x80, 0x7e, 0x17, 0x80, 0x3e, 0x57, 0x58, 0x1c, 0x69, 0x12, 0xc6, 0xe2, 0xba,
+	0x29, 0x70, 0x6d, 0xa1, 0x4d, 0x81, 0x8b, 0xd7, 0xc4, 0x13, 0x60, 0x8a, 0x20, 0x55, 0xcb, 0x2f,
+	0xd1, 0x9f, 0x34, 0x58, 0x88, 0xd7, 0xf9, 0x48, 0xf5, 0xfe, 0x28, 0xfa, 0x91, 0xe2, 0xea, 0x85,
+	0x7a, 0x32, 0x72, 0xf4, 0x6d, 0x81, 0xf1, 0x1b, 0x34, 0x05, 0x77, 0xe8, 0xb7, 0x1a, 0x64, 0x07,
+	0xba, 0x02, 0xa5, 0x5b, 0x55, 0x7d, 0x43, 0x71, 0x65, 0x24, 0x3c, 0x77, 0x6c, 0x8f, 0xf5, 0x42,
+	0xea, 0xca, 0x53, 0x51, 0x07, 0xfd, 0x12, 0x59, 0xe9, 0xcd, 0x91, 0x0a, 0xba, 0xa8, 0xca, 0x44,
+	0x86, 0xf8, 0x23, 0xa0, 0x4e, 0x98, 0xfe, 0x48, 0x80, 0x7a, 0xa0, 0xdf, 0x15, 0xa0, 0x02, 0x63,
+	0xef, 0x88, 0x6b, 0x8b, 0x44, 0x46, 0x79, 0xcc, 0xfd, 0x55, 0x83, 0x0f, 0x42, 0x18, 0xcc, 0x27,
+	0xd8, 0x36, 0x9d, 0xce, 0xe4, 0x70, 0xcf, 0xcd, 0xe7, 0xd8, 0xea, 0xa3, 0x7e, 0x2a, 0x50, 0x1f,
+	0xea, 0x07, 0xef, 0x03, 0x75, 0x0c, 0xe3, 0x96, 0x56, 0xfe, 0x52, 0x43, 0xbf, 0xd1, 0x60, 0x86,
+	0xe7, 0x53, 0xf4, 0xb1, 0x92, 0xba, 0x28, 0xd1, 0x5e, 0x40, 0xed, 0x03, 0x01, 0x72, 0x47, 0xbf,
+	0x39, 0x0d, 0x48, 0x9f, 0xe0, 0x36, 0x27, 0xf5, 0xb5, 0x06, 0xd9, 0x08, 0xe9, 0x44, 0xe0, 0x26,
+	0x22, 0xf2, 0x50, 0x60, 0x7c, 0xa8, 0xef, 0x4e, 0x83, 0x91, 0xc6, 0x71, 0x49, 0x0a, 0xdf, 0x68,
+	0x90, 0x1b, 0xce, 0xa1, 0xa8, 0xac, 0x40, 0x74, 0x4e, 0xa2, 0x2d, 0x5e, 0x50, 0x00, 0xe9, 0x4f,
+	0x04, 0xf0, 0x47, 0xfa, 0xde, 0x34, 0xc0, 0x9b, 0x43, 0xc6, 0x39, 0xd1, 0x7f, 0xd4, 0x20, 0x25,
+	0x33, 0x11, 0x2a, 0xa9, 0x1e, 0xf2, 0x78, 0x86, 0x2e, 0x7e, 0x3a, 0x46, 0x23, 0x78, 0x8c, 0xf6,
+	0x05, 0xd0, 0x7b, 0xfa, 0xf6, 0x34, 0x40, 0x65, 0x52, 0xe3, 0xf0, 0x7e, 0xaf, 0xc1, 0x7c, 0x98,
+	0xcf, 0x90, 0xae, 0x0a, 0x81, 0xc1, 0x64, 0x77, 0xee, 0x6b, 0x74, 0x20, 0x70, 0xed, 0xea, 0x77,
+	0xa6, 0x8a, 0xce, 0xc0, 0x18, 0x47, 0xf6, 0x46, 0x83, 0xc5, 0xc1, 0xd6, 0x0b, 0xad, 0x4d, 0xda,
+	0x9d, 0x15, 0x3f, 0x1f, 0x5b, 0x2e, 0x87, 0x5c, 0x1e, 0x09, 0xcc, 0x07, 0xfa, 0x8f, 0xa6, 0xc1,
+	0xec, 0x0d, 0x00, 0xe0, 0xc8, 0xff, 0xa2, 0x41, 0x76, 0xa0, 0xa9, 0x52, 0xbe, 0xf5, 0xaa, 0xb6,
+	0x6b, 0x42, 0xdc, 0xef, 0xe5, 0x96, 0x79, 0x71, 0xfb, 0x5b, 0x5a, 0x79, 0xfb, 0x77, 0x1a, 0x7c,
+	0xd8, 0x72, 0xed, 0x51, 0x04, 0xdb, 0x0b, 0x41, 0x71, 0x52, 0xe3, 0x2e, 0xaf, 0x69, 0x4f, 0x37,
+	0x03, 0x95, 0x8e, 0x6b, 0x61, 0xa7, 0x53, 0x71, 0xfd, 0x4e, 0xb5, 0x43, 0x1c, 0x11, 0x10, 0x55,
+	0x29, 0xc2, 0x9e, 0x49, 0x63, 0x7f, 0xf0, 0x7e, 0x1d, 0x7c, 0xfe, 0x39, 0x71, 0xf9, 0x9e, 0x5c,
+	0x7a, 0xdb, 0x72, 0xbb, 0xed, 0x4a, 0xb0, 0x6f, 0xe5, 0xf1, 0xfa, 0xdb, 0x50, 0xf2, 0x4c, 0x48,
+	0x9e, 0x05, 0x92, 0x67, 0x8f, 0xd7, 0x9b, 0x29, 0xb1, 0xf1, 0xf7, 0xfe, 0x13, 0x00, 0x00, 0xff,
+	0xff, 0x06, 0xd0, 0xcf, 0xc4, 0x6f, 0x17, 0x00, 0x00,
 }

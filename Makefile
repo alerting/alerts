@@ -1,26 +1,26 @@
+SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
 
-# Note: You need an individual entry below for them to be built
-COMMANDS=$(wildcard cmd/*)
-TAG := latest
+build: alerts resources gateway
 
-build: $(COMMANDS)
+proto:
+	protoc -I$(GOPATH)/src -Ipkg/protobuf pkg/protobuf/boolean.proto --go_out=plugins=grpc:pkg/protobuf
+	protoc -I$(GOPATH)/src -Ipkg/cap pkg/cap/cap.proto --go_out=plugins=grpc:pkg/cap
+	protoc -I$(GOPATH)/src -Ipkg/alerts pkg/alerts/alerts.proto --go_out=plugins=grpc:pkg/alerts
+	protoc -I$(GOPATH)/src -Ipkg/resources pkg/resources/resources.proto --go_out=plugins=grpc:pkg/resources
 
-.PHONY: build clean builder $(COMMANDS)
+base: proto
+	docker build -t nexus-docker.zacharyseguin.ca/alerts/base:latest .
 
-clean:
-	-docker rmi alerts:builder alerts:alert
+alerts: base
+	docker build -f Dockerfile.alerts -t nexus-docker.zacharyseguin.ca/alerts/alerts:latest  .
 
-builder:
-	docker build -t alerts:builder .
+resources: base
+	docker build -f Dockerfile.resources -t nexus-docker.zacharyseguin.ca/alerts/resources:latest  .
 
-cmd/alert: builder
-	docker build -t zachomedia/alerting:$(subst cmd/,,$@)-${TAG} $@
+gateway: base
+	docker build -f Dockerfile.gateway -t nexus-docker.zacharyseguin.ca/alerts/gateway:latest  .
 
-cmd/gateway: builder
-	docker build -t zachomedia/alerting:$(subst cmd/,,$@)-${TAG} $@
-
-cmd/import: builder
-	docker build -t zachomedia/alerting:$(subst cmd/,,$@)-${TAG} $@
-
-cmd/receive: builder
-	docker build -t zachomedia/alerting:$(subst cmd/,,$@)-${TAG} $@
+push: build
+	docker push nexus-docker.zacharyseguin.ca/alerts/alerts:latest
+	docker push nexus-docker.zacharyseguin.ca/alerts/resources:latest
+	docker push nexus-docker.zacharyseguin.ca/alerts/gateway:latest

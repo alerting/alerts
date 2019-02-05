@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package alerts;
+
+// Import additional proto definitions.
+import "google/protobuf/timestamp.proto";
+import "github.com/alerting/alerts/pkg/cap/cap.proto";
+import "github.com/alerting/alerts/pkg/protobuf/boolean.proto";
+
+/** Messages **/
+message Coordinate {
+   double lat = 1;
+   double lon = 2;
+}
+
+message TimeConditions {
+   google.protobuf.Timestamp gte = 1;
+   google.protobuf.Timestamp gt = 2;
+   google.protobuf.Timestamp lte = 3;
+   google.protobuf.Timestamp lt = 4;
+}
+
+message FindCriteria {
+   int32 start = 1;
+   int32 count = 2;
+   repeated string sort = 3;
+
+   // cap.Alert
+   bool superseded = 4;
+   bool not_superseded = 5;
+   cap.Alert.Status status = 6;
+   cap.Alert.MessageType message_type = 7;
+   cap.Alert.Scope scope = 8;
+
+   // cap.Info
+   string language = 9;
+   cap.Info.Certainty certainty = 10;
+   cap.Info.Severity severity = 11;
+   cap.Info.Urgency urgency = 12;
+   string headline = 13;
+   string description = 14;
+   string instruction = 15;
+   TimeConditions effective = 16;
+   TimeConditions onset = 17;
+   TimeConditions expires =18;
+
+   // cap.Area
+   string area_description = 19;
+   Coordinate point = 20;
+}
+
+message Hit {
+   string id = 1;
+   cap.Alert alert = 2;
+   cap.Info info = 3;
+}
+
+message FindResult {
+   int64 total = 1;
+   repeated Hit hits = 2;
+}
+
+/** Services **/
+service AlertsService {
+   // Add a new alert.
+   rpc Add(cap.Alert) returns (cap.Alert);
+
+   // Returns the alert that matches the provided reference.
+   // NOTE: Either id or (identifier, sender, sent) must be provided.
+   rpc Get(cap.Reference) returns (cap.Alert);
+
+   // Returns whether or not an alert matches the provided reference.
+   // NOTE: Either id or (identifier, sender, sent) must be provided.
+   rpc Has(cap.Reference) returns (alerts.protobuf.BooleanResult);
+
+   // Find alerts matching the provided criteria.
+   rpc Find(FindCriteria) returns (FindResult);
+}

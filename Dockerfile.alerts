@@ -1,0 +1,7 @@
+FROM nexus-docker.zacharyseguin.ca/alerts/base:latest AS base
+FROM scratch
+EXPOSE 2400
+COPY --from=base /go/bin/alerts /alerts
+USER 10000
+ENTRYPOINT ["/alerts"]
+CMD ["serve"]
