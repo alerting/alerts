@@ -24,7 +24,15 @@ func (p *Polygon) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return err
 	}
 
+	str = strings.TrimSpace(str)
+
+	// Don't process an empty polygon
+	if str == "" {
+		return nil
+	}
+
 	coords := strings.Split(str, " ")
+
 	coordinates := make([][]float64, 0)
 
 	var lastCoord []float64

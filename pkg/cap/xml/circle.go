@@ -27,6 +27,8 @@ func (m *Circles) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		return err
 	}
 
+	str = strings.TrimSpace(str)
+
 	// Ignore empty strings
 	if str == "" {
 		return nil
