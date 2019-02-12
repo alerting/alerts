@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	timeFormat = "2006-01-02T15:04:05-07:00"
+	// TimeFormat is the time format used for dates in the CAP protocol.
+	TimeFormat = "2006-01-02T15:04:05-07:00"
 )
 
 // We re-implement the Time structure
@@ -21,7 +22,7 @@ type Time struct {
 
 // FormatCAP returns the time, formatted to Common Alert Protocol standards.
 func (time Time) FormatCAP() string {
-	str := time.Format(timeFormat)
+	str := time.Format(TimeFormat)
 	return strings.Replace(str, "+00:00", "-00:00", 1)
 }
 
