@@ -6,6 +6,8 @@ services:
       - "9200"
     networks:
       - backend
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
 
   alerts:
     image: nexus-docker.zacharyseguin.ca/alerts/alerts
@@ -59,4 +61,5 @@ networks:
   backend: {}
 
 volumes:
+  elasticsearch: {}
   resources: {}
