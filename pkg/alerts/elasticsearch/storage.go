@@ -430,7 +430,12 @@ func (s *Storage) Find(ctx context.Context, criteria *alerts.FindCriteria) (*ale
 	if criteria.Language != "" {
 		log.WithField("value", criteria.Language).Debug("language")
 		span.SetTag("language", criteria.Language)
-		query = query.Must(elastic.NewTermQuery("language", criteria.Language))
+
+		if strings.ContainsAny(criteria.Language, "*?") {
+			query = query.Must(elastic.NewWildcardQuery("language", criteria.Language))
+		} else {
+			query = query.Must(elastic.NewTermQuery("language", criteria.Language))
+		}
 	}
 
 	if criteria.Certainty != cap.Info_CERTAINTY_UNKNOWN {
