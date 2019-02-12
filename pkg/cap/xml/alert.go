@@ -25,7 +25,7 @@ type Alert struct {
 	Note        string      `xml:"note" json:"note"`
 	References  References  `xml:"references" json:"references"`
 	Incidents   List        `xml:"incidents" json:"incidents"`
-	Infos       []Info      `xml:"info" json:"infos"`
+	Infos       []*Info     `xml:"info" json:"infos"`
 	Superseded  bool        `xml:"-" json:"superseded"`
 }
 

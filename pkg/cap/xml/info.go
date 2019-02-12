@@ -27,6 +27,6 @@ type Info struct {
 	Web           string         `xml:"web" json:"web"`
 	Contact       string         `xml:"contact" json:"contact"`
 	Parameters    KeyValue       `xml:"parameter" json:"parameters"`
-	Resources     []Resource     `xml:"resource" json:"resources"`
-	Areas         []Area         `xml:"area" json:"areas"`
+	Resources     []*Resource    `xml:"resource" json:"resources"`
+	Areas         []*Area        `xml:"area" json:"areas"`
 }
