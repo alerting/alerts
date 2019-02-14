@@ -54,6 +54,7 @@ var serveCmd = &cobra.Command{
 		grpcServer := grpc.NewServer(
 			grpc.UnaryInterceptor(otgrpc.OpenTracingServerInterceptor(opentracing.GlobalTracer())),
 			grpc.StreamInterceptor(otgrpc.OpenTracingStreamServerInterceptor(opentracing.GlobalTracer())),
+			grpc.MaxMsgSize(1024*1024*1024),
 		)
 		alerts.RegisterAlertsServiceServer(grpcServer, service)
 
