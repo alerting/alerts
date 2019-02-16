@@ -256,4 +256,7 @@ message Alert {
 
    // The alert has been superseded
    bool superseded = 16;
+
+   // System from which the alert was received
+   string system = 17;
 }
