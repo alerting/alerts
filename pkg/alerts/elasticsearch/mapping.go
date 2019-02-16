@@ -22,6 +22,7 @@ const mapping = `{
 	  "doc": {
 		 "dynamic": false,
 		 "properties": {
+			"system": { "type": "keyword", "normalizer": "keyword_normalizer" },
 			"identifier": { "type": "keyword", "normalizer": "keyword_normalizer" },
 			"sender": { "type": "keyword", "normalizer": "keyword_normalizer" },
 			"sent": { "type": "date" },
