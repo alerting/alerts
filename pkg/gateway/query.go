@@ -175,6 +175,10 @@ func getAlertsQuery(ctx context.Context, query url.Values) (*alerts.FindCriteria
 		}
 	}
 
+	if val := query.Get("system"); val != "" {
+		req.System = val
+	}
+
 	var err error
 	req.Effective, err = getTimeQuery(ctx, query, "effective")
 	if err != nil {

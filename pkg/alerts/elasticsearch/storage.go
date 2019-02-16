@@ -430,6 +430,12 @@ func (s *Storage) Find(ctx context.Context, criteria *alerts.FindCriteria) (*ale
 		alertQuery = alertQuery.Must(elastic.NewTermQuery("scope", criteria.Scope.String()))
 	}
 
+	if criteria.System != "" {
+		log.WithField("value", criteria.Scope).Debug("system")
+		span.SetTag("system", criteria.Scope)
+		alertQuery = alertQuery.Must(elastic.NewTermQuery("system", criteria.System))
+	}
+
 	alertInnerHit := elastic.NewInnerHit().FetchSource(true)
 	if len(criteria.Fields) > 0 {
 		alertInnerHit = elastic.NewInnerHit().FetchSourceContext(elastic.NewFetchSourceContext(true).Include(criteria.Fields...))

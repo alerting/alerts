@@ -32,6 +32,7 @@ message FindCriteria {
    cap.Alert.Status status = 6;
    cap.Alert.MessageType message_type = 7;
    cap.Alert.Scope scope = 8;
+   string system = 22;
 
    // cap.Info
    string language = 9;
