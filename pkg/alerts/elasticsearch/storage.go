@@ -385,6 +385,12 @@ func (s *Storage) Find(ctx context.Context, criteria *alerts.FindCriteria) (*ale
 		search = search.Sort(field, asc)
 	}
 
+	// Response fields
+	if len(criteria.Fields) > 0 {
+		log.WithField("value", criteria.Fields).Debug("Fields")
+		search = search.FetchSourceContext(elastic.NewFetchSourceContext(true).Include(criteria.Fields...))
+	}
+
 	// Generate the query
 	query := elastic.NewBoolQuery()
 
@@ -424,7 +430,11 @@ func (s *Storage) Find(ctx context.Context, criteria *alerts.FindCriteria) (*ale
 		alertQuery = alertQuery.Must(elastic.NewTermQuery("scope", criteria.Scope.String()))
 	}
 
-	query = query.Must(elastic.NewHasParentQuery("alert", alertQuery).InnerHit(elastic.NewInnerHit().FetchSource(true)))
+	alertInnerHit := elastic.NewInnerHit().FetchSource(true)
+	if len(criteria.Fields) > 0 {
+		alertInnerHit = elastic.NewInnerHit().FetchSourceContext(elastic.NewFetchSourceContext(true).Include(criteria.Fields...))
+	}
+	query = query.Must(elastic.NewHasParentQuery("alert", alertQuery).InnerHit(alertInnerHit))
 
 	// Info filters
 	if criteria.Language != "" {
@@ -537,7 +547,6 @@ func (s *Storage) Find(ctx context.Context, criteria *alerts.FindCriteria) (*ale
 
 	// Do the search
 	search = search.Query(query)
-	search = search.FetchSourceContext(elastic.NewFetchSourceContext(true).Exclude("resources.derefUri"))
 
 	results, err := search.Do(sctx)
 	if err != nil {
@@ -558,29 +567,35 @@ func (s *Storage) Find(ctx context.Context, criteria *alerts.FindCriteria) (*ale
 	}
 
 	for _, hit := range results.Hits.Hits {
-		var alert cap.Alert
-		var info cap.Info
+		var alert *cap.Alert
+		var info *cap.Info
 
-		if err := unmarshaller.Unmarshal(bytes.NewReader(*hit.InnerHits["alert"].Hits.Hits[0].Source), &alert); err != nil {
-			log.WithError(err).Error("Failed to unmarshal alert")
-			raven.CaptureError(err, nil)
-			ext.Error.Set(span, true)
-			span.LogFields(otlog.Error(err))
-			return nil, err
+		if innerHit, ok := hit.InnerHits["alert"]; ok {
+			alert = new(cap.Alert)
+			if err := unmarshaller.Unmarshal(bytes.NewReader(*innerHit.Hits.Hits[0].Source), alert); err != nil {
+				log.WithError(err).Error("Failed to unmarshal alert")
+				raven.CaptureError(err, nil)
+				ext.Error.Set(span, true)
+				span.LogFields(otlog.Error(err))
+				return nil, err
+			}
 		}
 
-		if err := unmarshaller.Unmarshal(bytes.NewReader(*hit.Source), &info); err != nil {
-			log.WithError(err).Error("Failed to unmarshal info")
-			raven.CaptureError(err, nil)
-			ext.Error.Set(span, true)
-			span.LogFields(otlog.Error(err))
-			return nil, err
+		if hit.Source != nil {
+			info = new(cap.Info)
+			if err := unmarshaller.Unmarshal(bytes.NewReader(*hit.Source), info); err != nil {
+				log.WithError(err).Error("Failed to unmarshal info")
+				raven.CaptureError(err, nil)
+				ext.Error.Set(span, true)
+				span.LogFields(otlog.Error(err))
+				return nil, err
+			}
 		}
 
 		response.Hits = append(response.Hits, &alerts.Hit{
 			Id:    hit.Id,
-			Alert: &alert,
-			Info:  &info,
+			Alert: alert,
+			Info:  info,
 		})
 	}
 

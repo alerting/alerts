@@ -24,6 +24,7 @@ message FindCriteria {
    int32 start = 1;
    int32 count = 2;
    repeated string sort = 3;
+   repeated string fields = 21;
 
    // cap.Alert
    bool superseded = 4;
