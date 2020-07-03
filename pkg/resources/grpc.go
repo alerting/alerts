@@ -20,6 +20,11 @@ import (
 	context "golang.org/x/net/context"
 )
 
+var (
+	// ErrNotFound is returned when a resource cannot be located.
+	ErrNotFound = errors.New("resource not found")
+)
+
 // Server is GRPC server for the resource microservice.
 type Server struct {
 	Storage Storage
@@ -57,6 +62,8 @@ func fetch(ctx context.Context, uri *url.URL) (io.ReadCloser, error) {
 
 	if res.StatusCode >= 200 && res.StatusCode <= 299 {
 		return res.Body, nil
+	} else if res.StatusCode == http.StatusNotFound {
+		return nil, ErrNotFound
 	}
 
 	return nil, fmt.Errorf("Unexpected response code %d", res.StatusCode)
@@ -101,6 +108,14 @@ func (s *Server) Add(ctx context.Context, resource *cap.Resource) (*cap.Resource
 
 	log.WithField("filename", filename).Info("Generated filename")
 
+	response := &cap.Resource{
+		Uri:         filename,
+		MimeType:    resource.MimeType,
+		Digest:      resource.Checksum(),
+		Size:        resource.Size,
+		Description: resource.Description,
+	}
+
 	// Determine if we have to fetch the file.
 	has, err := s.Storage.Has(sctx, filename)
 	if err != nil {
@@ -126,13 +141,25 @@ func (s *Server) Add(ctx context.Context, resource *cap.Resource) (*cap.Resource
 		} else if uri.Hostname() != "" {
 			// If we have a URL, fetch it.
 			data, err := fetch(sctx, uri)
-			if err != nil {
+
+			// In the rare instance the resource doesn't exist,
+			// we're just gonna ignore that failure and pretend it did.
+			// TODO: Actually handle this in a smarter way.
+			if err == ErrNotFound {
+				log.WithError(err).Error("The resource did not exist")
+				raven.CaptureError(err, nil)
+				ext.Error.Set(span, true)
+				span.LogFields(otlog.Error(err))
+
+				return response, nil
+			} else if err != nil {
 				log.WithError(err).Error("Failed to fetch resource")
 				raven.CaptureError(err, nil)
 				ext.Error.Set(span, true)
 				span.LogFields(otlog.Error(err))
 				return nil, err
 			}
+
 			defer data.Close()
 
 			err = s.Storage.Add(sctx, filename, resource.MimeType, data)
@@ -153,12 +180,7 @@ func (s *Server) Add(ctx context.Context, resource *cap.Resource) (*cap.Resource
 	}
 
 	// Return the updated resource object
-	return &cap.Resource{
-		Uri:      filename,
-		MimeType: resource.MimeType,
-		Digest:   resource.Checksum(),
-		Size:     resource.Size,
-	}, nil
+	return response, nil
 }
 
 func (s *Server) Get(ctx context.Context, req *GetRequest) (*GetResponse, error) {
