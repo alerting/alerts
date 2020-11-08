@@ -10,8 +10,8 @@ RUN mkdir -p /usr/local/bin \
     && curl -fsSL -o /usr/local/bin/dep https://github.com/golang/dep/releases/download/v${DEP_VERSION}/dep-linux-amd64 \
     && chmod +x /usr/local/bin/dep
 
-WORKDIR /go/src/github.com/alerting/alerts
-COPY . /go/src/github.com/alerting/alerts
+WORKDIR /go/src/zacharyseguin.ca/alerts
+COPY . /go/src/zacharyseguin.ca/alerts
 
 RUN dep ensure
 RUN CGO_ENABLED=0 GOOS=linux go install ./cmd/...

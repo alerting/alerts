@@ -1,10 +1,10 @@
 package alerts
 
 import (
-	cap "github.com/alerting/alerts/pkg/cap"
 	opentracing "github.com/opentracing/opentracing-go"
 	log "github.com/sirupsen/logrus"
 	context "golang.org/x/net/context"
+	cap "zacharyseguin.ca/alerts/pkg/cap"
 )
 
 // cleanupAlert cleans alert values.

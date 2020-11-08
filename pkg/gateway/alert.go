@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/alerting/alerts/pkg/alerts"
-	"github.com/alerting/alerts/pkg/cap"
 	raven "github.com/getsentry/raven-go"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/gorilla/mux"
@@ -13,6 +11,8 @@ import (
 	"github.com/opentracing/opentracing-go/ext"
 	otlog "github.com/opentracing/opentracing-go/log"
 	log "github.com/sirupsen/logrus"
+	"zacharyseguin.ca/alerts/pkg/alerts"
+	"zacharyseguin.ca/alerts/pkg/cap"
 )
 
 func GetAlert(alertsClient alerts.AlertsServiceClient) func(http.ResponseWriter, *http.Request) {

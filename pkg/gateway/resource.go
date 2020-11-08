@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/alerting/alerts/pkg/resources"
+	"zacharyseguin.ca/alerts/pkg/resources"
 
 	raven "github.com/getsentry/raven-go"
 	"github.com/gorilla/mux"

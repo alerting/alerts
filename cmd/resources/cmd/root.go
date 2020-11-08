@@ -26,16 +26,15 @@ import (
 	"os"
 	"strings"
 
-	"github.com/alerting/alerts/internal/tracing"
-	"github.com/alerting/alerts/pkg/resources"
-	"github.com/alerting/alerts/pkg/resources/filesystem"
-	"github.com/alerting/alerts/pkg/resources/swift"
 	raven "github.com/getsentry/raven-go"
 	homedir "github.com/mitchellh/go-homedir"
 	opentracing "github.com/opentracing/opentracing-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"zacharyseguin.ca/alerts/pkg/resources"
+	"zacharyseguin.ca/alerts/pkg/resources/filesystem"
+	"zacharyseguin.ca/alerts/pkg/resources/swift"
 )
 
 var cfgFile string
@@ -71,15 +70,15 @@ var rootCmd = &cobra.Command{
 		// Initialize tracing.
 		log.Debug("Initializing Jaeger + OpenTracing")
 
-		var tracer opentracing.Tracer
+		var tracer opentracing.Tracer = opentracing.NoopTracer{}
 		var err error
-		tracer, closer, err = tracing.Init()
-		if err != nil {
-			log.WithError(err).Warn("Unable to initialize tracer")
-			raven.CaptureErrorAndWait(err, nil)
+		// tracer, closer, err = tracing.Init()
+		// if err != nil {
+		// 	log.WithError(err).Warn("Unable to initialize tracer")
+		// 	raven.CaptureErrorAndWait(err, nil)
 
-			tracer = opentracing.NoopTracer{}
-		}
+		// 	tracer = opentracing.NoopTracer{}
+		// }
 		opentracing.SetGlobalTracer(tracer)
 
 		// Initialize storage.

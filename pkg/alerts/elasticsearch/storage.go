@@ -8,18 +8,18 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/alerting/alerts/pkg/alerts"
-	"github.com/alerting/alerts/pkg/cap"
 	raven "github.com/getsentry/raven-go"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/v7"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	otlog "github.com/opentracing/opentracing-go/log"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"zacharyseguin.ca/alerts/pkg/alerts"
+	"zacharyseguin.ca/alerts/pkg/cap"
 )
 
 // Storage defines an Elasticsearch alerts storage.
@@ -122,7 +122,7 @@ func (s *Storage) Add(ctx context.Context, alert *cap.Alert) error {
 	span, _ := opentracing.StartSpanFromContext(ctx, "Add")
 	defer span.Finish()
 
-	bulk := s.Client.Bulk().Index(s.Index).Type("doc")
+	bulk := s.Client.Bulk().Index(s.Index)
 
 	span.LogEventWithPayload("alert", fmt.Sprintf("%s %s,%s,%s", alert.Id, alert.Identifier, alert.Sender, alert.Sent))
 
@@ -210,7 +210,7 @@ func (s *Storage) Get(ctx context.Context, reference *cap.Reference) (*cap.Alert
 		"id":    id,
 		"index": s.Index,
 	}).Debug("Fetching alert from ElasticSearch")
-	item, err := s.Client.Get().Index(s.Index).Type("doc").Id(id).Do(sctx)
+	item, err := s.Client.Get().Index(s.Index).Id(id).Do(sctx)
 	log.Debug("Response received")
 
 	if err != nil {
@@ -246,7 +246,7 @@ func (s *Storage) Get(ctx context.Context, reference *cap.Reference) (*cap.Alert
 	dec := &jsonpb.Unmarshaler{
 		AllowUnknownFields: true,
 	}
-	err = dec.Unmarshal(bytes.NewReader(*item.Source), &alert)
+	err = dec.Unmarshal(bytes.NewReader(item.Source), &alert)
 	if err != nil {
 		log.WithError(err).Error("Unable to unmarshal alert")
 		raven.CaptureError(err, nil)
@@ -260,7 +260,7 @@ func (s *Storage) Get(ctx context.Context, reference *cap.Reference) (*cap.Alert
 	log.Debug("Finding infos associated with the alert")
 	q := elastic.NewParentIdQuery("info", id)
 
-	search := s.Client.Search().Index(s.Index).Type("doc")
+	search := s.Client.Search().Index(s.Index)
 	search = search.Query(q)
 	// Realistically, there shouldn't be more than ~4 (Canada NAAD)
 	search = search.From(0).Size(20)
@@ -290,7 +290,7 @@ func (s *Storage) Get(ctx context.Context, reference *cap.Reference) (*cap.Alert
 
 		for _, hit := range res.Hits.Hits {
 			var info cap.Info
-			err = dec.Unmarshal(bytes.NewReader(*hit.Source), &info)
+			err = dec.Unmarshal(bytes.NewReader(hit.Source), &info)
 			if err != nil {
 				log.WithError(err).Error("Failed to unmarshal info")
 				raven.CaptureError(err, nil)
@@ -353,7 +353,7 @@ func (s *Storage) Find(ctx context.Context, criteria *alerts.FindCriteria) (*ale
 	span, sctx := opentracing.StartSpanFromContext(ctx, "Storage.ElasticSearch::Find")
 	defer span.Finish()
 
-	search := s.Client.Search(s.Index).Type("doc")
+	search := s.Client.Search(s.Index)
 
 	// Pagination
 	if criteria.Start > 0 {
@@ -578,7 +578,7 @@ func (s *Storage) Find(ctx context.Context, criteria *alerts.FindCriteria) (*ale
 
 		if innerHit, ok := hit.InnerHits["alert"]; ok {
 			alert = new(cap.Alert)
-			if err := unmarshaller.Unmarshal(bytes.NewReader(*innerHit.Hits.Hits[0].Source), alert); err != nil {
+			if err := unmarshaller.Unmarshal(bytes.NewReader(innerHit.Hits.Hits[0].Source), alert); err != nil {
 				log.WithError(err).Error("Failed to unmarshal alert")
 				raven.CaptureError(err, nil)
 				ext.Error.Set(span, true)
@@ -589,7 +589,7 @@ func (s *Storage) Find(ctx context.Context, criteria *alerts.FindCriteria) (*ale
 
 		if hit.Source != nil {
 			info = new(cap.Info)
-			if err := unmarshaller.Unmarshal(bytes.NewReader(*hit.Source), info); err != nil {
+			if err := unmarshaller.Unmarshal(bytes.NewReader(hit.Source), info); err != nil {
 				log.WithError(err).Error("Failed to unmarshal info")
 				raven.CaptureError(err, nil)
 				ext.Error.Set(span, true)
@@ -633,7 +633,7 @@ func (s *Storage) Supersede(ctx context.Context, reference *cap.Reference) error
 	update := map[string]interface{}{
 		"superseded": true,
 	}
-	_, err := s.Client.Update().Index(s.Index).Type("doc").Id(id).Doc(update).Do(sctx)
+	_, err := s.Client.Update().Index(s.Index).Id(id).Doc(update).Do(sctx)
 	if err != nil {
 		log.WithError(err).Error("ElasticSearch update failed")
 		raven.CaptureError(err, nil)
@@ -665,7 +665,7 @@ func (s *Storage) IsSuperseded(ctx context.Context, reference *cap.Reference) (b
 	}
 
 	log.WithField("id", id).Debug("Checking if alert has been superseded")
-	search := s.Client.Search().Index(s.Index).Type("doc")
+	search := s.Client.Search().Index(s.Index)
 	search = search.Size(1)
 	search = search.Query(elastic.NewNestedQuery("references", elastic.NewTermQuery("references.id", id)))
 	search = search.FetchSource(false)

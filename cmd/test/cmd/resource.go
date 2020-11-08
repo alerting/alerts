@@ -24,12 +24,12 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/alerting/alerts/pkg/cap"
 	raven "github.com/getsentry/raven-go"
 	"github.com/golang/protobuf/jsonpb"
 	opentracing "github.com/opentracing/opentracing-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"zacharyseguin.ca/alerts/pkg/cap"
 )
 
 // resourceCmd represents the resource command

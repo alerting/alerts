@@ -6,8 +6,8 @@ package alerts
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import cap "github.com/alerting/alerts/pkg/cap"
-import protobuf "github.com/alerting/alerts/pkg/protobuf"
+import cap "zacharyseguin.ca/alerts/pkg/cap"
+import protobuf "zacharyseguin.ca/alerts/pkg/protobuf"
 import timestamp "github.com/golang/protobuf/ptypes/timestamp"
 
 import (

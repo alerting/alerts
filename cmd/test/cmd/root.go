@@ -28,10 +28,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/alerting/alerts/pkg/resources"
+	"zacharyseguin.ca/alerts/pkg/resources"
 
-	"github.com/alerting/alerts/internal/tracing"
-	"github.com/alerting/alerts/pkg/alerts"
 	raven "github.com/getsentry/raven-go"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	homedir "github.com/mitchellh/go-homedir"
@@ -41,6 +39,8 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"zacharyseguin.ca/alerts/internal/tracing"
+	"zacharyseguin.ca/alerts/pkg/alerts"
 )
 
 var cfgFile string

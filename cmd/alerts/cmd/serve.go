@@ -27,13 +27,13 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/alerting/alerts/pkg/alerts"
 	raven "github.com/getsentry/raven-go"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	opentracing "github.com/opentracing/opentracing-go"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
+	"zacharyseguin.ca/alerts/pkg/alerts"
 )
 
 // serveCmd represents the serve command

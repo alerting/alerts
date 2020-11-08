@@ -26,7 +26,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alerting/alerts/pkg/cap"
+	"zacharyseguin.ca/alerts/pkg/cap"
 
 	raven "github.com/getsentry/raven-go"
 	opentracing "github.com/opentracing/opentracing-go"

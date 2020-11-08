@@ -19,7 +19,7 @@ const mapping = `{
 	  }
 	},
 	"mappings": {
-	  "doc": {
+	  "_doc": {
 		 "dynamic": false,
 		 "properties": {
 			"system": { "type": "keyword", "normalizer": "keyword_normalizer" },

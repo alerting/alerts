@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/alerting/alerts/pkg/alerts"
 	raven "github.com/getsentry/raven-go"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes"
@@ -13,6 +12,7 @@ import (
 	"github.com/opentracing/opentracing-go/ext"
 	otlog "github.com/opentracing/opentracing-go/log"
 	log "github.com/sirupsen/logrus"
+	"zacharyseguin.ca/alerts/pkg/alerts"
 )
 
 func GetActiveAlerts(alertsClient alerts.AlertsServiceClient) func(http.ResponseWriter, *http.Request) {

@@ -20,7 +20,7 @@
 
 package main
 
-import "github.com/alerting/alerts/cmd/alerts/cmd"
+import "zacharyseguin.ca/alerts/cmd/alerts/cmd"
 
 func main() {
 	cmd.Execute()

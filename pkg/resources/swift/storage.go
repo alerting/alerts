@@ -7,10 +7,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/alerting/alerts/pkg/resources"
 	"github.com/ncw/swift"
 	opentracing "github.com/opentracing/opentracing-go"
 	log "github.com/sirupsen/logrus"
+	"zacharyseguin.ca/alerts/pkg/resources"
 )
 
 type Storage struct {

@@ -1,8 +1,8 @@
 package alerts
 
 import (
-	cap "github.com/alerting/alerts/pkg/cap"
 	context "golang.org/x/net/context"
+	cap "zacharyseguin.ca/alerts/pkg/cap"
 )
 
 // Storage defines an interface for alert storage.

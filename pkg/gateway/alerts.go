@@ -4,13 +4,13 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/alerting/alerts/pkg/alerts"
 	raven "github.com/getsentry/raven-go"
 	"github.com/golang/protobuf/jsonpb"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	otlog "github.com/opentracing/opentracing-go/log"
 	log "github.com/sirupsen/logrus"
+	"zacharyseguin.ca/alerts/pkg/alerts"
 )
 
 func GetAlerts(alertsClient alerts.AlertsServiceClient) func(http.ResponseWriter, *http.Request) {

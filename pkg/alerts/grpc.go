@@ -1,16 +1,16 @@
 package alerts
 
 import (
-	"github.com/alerting/alerts/pkg/resources"
+	"zacharyseguin.ca/alerts/pkg/resources"
 
-	cap "github.com/alerting/alerts/pkg/cap"
-	protobuf "github.com/alerting/alerts/pkg/protobuf"
 	raven "github.com/getsentry/raven-go"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	otlog "github.com/opentracing/opentracing-go/log"
 	log "github.com/sirupsen/logrus"
 	context "golang.org/x/net/context"
+	cap "zacharyseguin.ca/alerts/pkg/cap"
+	protobuf "zacharyseguin.ca/alerts/pkg/protobuf"
 )
 
 // Server is GRPC server for the alerts microservice.

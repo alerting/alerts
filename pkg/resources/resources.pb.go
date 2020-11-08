@@ -6,7 +6,7 @@ package resources
 import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import cap "github.com/alerting/alerts/pkg/cap"
+import cap "zacharyseguin.ca/alerts/pkg/cap"
 
 import (
 	context "golang.org/x/net/context"

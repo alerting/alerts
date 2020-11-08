@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"log"
 
-	capxml "github.com/alerting/alerts/pkg/cap/xml"
 	"github.com/golang/protobuf/jsonpb"
+	capxml "zacharyseguin.ca/alerts/pkg/cap/xml"
 )
 
 func (alert *Alert) ID() string {

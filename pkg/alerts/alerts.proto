@@ -4,8 +4,8 @@ package alerts;
 
 // Import additional proto definitions.
 import "google/protobuf/timestamp.proto";
-import "github.com/alerting/alerts/pkg/cap/cap.proto";
-import "github.com/alerting/alerts/pkg/protobuf/boolean.proto";
+import "zacharyseguin.ca/alerts/pkg/cap/cap.proto";
+import "zacharyseguin.ca/alerts/pkg/protobuf/boolean.proto";
 
 /** Messages **/
 message Coordinate {

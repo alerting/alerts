@@ -8,14 +8,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/alerting/alerts/pkg/alerts"
-	"github.com/alerting/alerts/pkg/cap"
 	raven "github.com/getsentry/raven-go"
 	"github.com/golang/protobuf/ptypes"
 	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	otlog "github.com/opentracing/opentracing-go/log"
 	log "github.com/sirupsen/logrus"
+	"zacharyseguin.ca/alerts/pkg/alerts"
+	"zacharyseguin.ca/alerts/pkg/cap"
 )
 
 func getTimeQuery(ctx context.Context, query url.Values, prefix string) (*alerts.TimeConditions, error) {

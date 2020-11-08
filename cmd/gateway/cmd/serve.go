@@ -23,7 +23,7 @@ package cmd
 import (
 	"net/http"
 
-	"github.com/alerting/alerts/pkg/gateway"
+	"zacharyseguin.ca/alerts/pkg/gateway"
 
 	raven "github.com/getsentry/raven-go"
 	"github.com/gorilla/mux"
